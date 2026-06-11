@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Vercel
+.vercel
+
+# Secrets / local env
+.env
+.env.*
+!.env.example
+
+# Enrichment script working files (regenerable, may be large)
+scripts/enrich-cache.json
+scripts/enrich-report.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

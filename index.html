@@ -39,6 +39,14 @@
  .kctag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:9px;color:#fff}
  .kc-h{background:#0a7d28}.kc-m{background:#c8820a}.kc-l{background:#9aa0a6}
  .detlink{font-size:13px}
+ .detthumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:4px}
+ .detthumbs img{width:100%;height:74px;object-fit:cover;border-radius:5px;cursor:pointer;background:#eee}
+ .detcred{font-size:11px;color:#999;margin-top:6px;line-height:1.4}
+ #lightbox{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:2000;flex-direction:column;gap:10px}
+ #lightbox.hidden{display:none}
+ #lightbox img{max-width:92vw;max-height:80vh;object-fit:contain;border-radius:4px}
+ #lightbox .lbcap{color:#eee;font-size:12px;max-width:90vw;text-align:center}
+ #lightbox .lbclose{position:absolute;top:14px;right:18px;color:#fff;background:none;border:none;font-size:30px;cursor:pointer}
 </style></head><body>
 <div id="map"></div>
 <div id="panel">
@@ -74,6 +82,7 @@
   <button id="detclose" title="Lukk">×</button>
   <div id="detbody"></div>
 </div>
+<div id="lightbox" class="hidden"><button class="lbclose" title="Lukk">×</button><img alt=""/><div class="lbcap"></div></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -166,7 +175,35 @@ function openDetail(r){
   updateHash();
 }
 function closeDetail(){ currentDetail=null; $('detail').classList.add('hidden'); updateHash(); }
-function loadPhotos(r){ $('detphotos').textContent = r.hp ? 'Laster…' : 'Ingen registrerte foto.'; }
+let photoToken=0;
+function loadPhotos(r){
+  const box=$('detphotos');
+  if(!r.hp||!r.dq){ box.textContent='Ingen registrerte foto.'; return; }
+  box.textContent='Laster foto…';
+  const myToken=++photoToken;
+  fetch('/api/photos?dq='+encodeURIComponent(r.dq))
+    .then(res=>{ if(!res.ok) throw new Error('http '+res.status); return res.json(); })
+    .then(list=>{
+      if(myToken!==photoToken) return;           // a newer panel opened; ignore stale result
+      if(!Array.isArray(list)||!list.length){ box.textContent='Ingen foto funnet.'; return; }
+      const grid=document.createElement('div'); grid.className='detthumbs';
+      list.forEach(p=>{ const im=document.createElement('img'); im.src=p.thumb; im.alt=p.title||''; im.loading='lazy';
+        im.onclick=()=>openLightbox(p); grid.appendChild(im); });
+      box.innerHTML=''; box.appendChild(grid);
+      const cred=document.createElement('div'); cred.className='detcred';
+      cred.textContent='Foto fra DigitaltMuseum. Klikk for større visning.';
+      box.appendChild(cred);
+    })
+    .catch(()=>{ if(myToken!==photoToken) return;
+      box.textContent='Kunne ikke laste foto (krever publisert versjon med backend).'; });
+}
+function openLightbox(p){
+  const lb=$('lightbox'); lb.querySelector('img').src=p.full||p.thumb;
+  const owner=[p.owner,p.license].filter(Boolean).join(' · ');
+  lb.querySelector('.lbcap').innerHTML=esc([p.title,owner].filter(Boolean).join(' — '))
+    +(p.dimuUrl?' · <a style="color:#9cf" target="_blank" rel="noopener" href="'+p.dimuUrl+'">DigitaltMuseum ↗</a>':'');
+  lb.classList.remove('hidden');
+}
 function visible(r){
   const C=dimConf(dim),cat=C.get(r);
   if(hidden.has(cat)) return false;
@@ -233,7 +270,9 @@ $('hideund').addEventListener('change',e=>{hideUnd=e.target.checked;render();});
 $('usecluster').addEventListener('change',e=>{useCluster=e.target.checked;render();});
 $('onlyphoto').addEventListener('change',e=>{onlyPhoto=e.target.checked;render();});
 $('detclose').onclick=closeDetail;
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
+$('lightbox').querySelector('.lbclose').onclick=()=>$('lightbox').classList.add('hidden');
+$('lightbox').addEventListener('click',e=>{if(e.target.id==='lightbox')$('lightbox').classList.add('hidden');});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const lb=$('lightbox'); if(!lb.classList.contains('hidden'))lb.classList.add('hidden'); else closeDetail();}});
 $('all').onclick=()=>{hidden.clear();buildLegend();render();};
 $('none').onclick=()=>{const C=dimConf(dim);markers.forEach(o=>hidden.add(C.get(o.rec)));buildLegend();render();};
 // timeline play

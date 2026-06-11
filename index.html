@@ -48,6 +48,7 @@
  <input id="search" placeholder="gate, betegnelse, funksjon…"/>
  <div class="btnrow"><button class="btn" id="all">Vis alle</button><button class="btn" id="none">Skjul alle</button></div>
  <label class="chk"><input type="checkbox" id="usecluster" checked/> Slå sammen nære punkter (clustering)</label>
+ <label class="chk"><input type="checkbox" id="onlyphoto"/> Kun objekter med foto</label>
  <label class="fld">Tegnforklaring</label>
  <div class="legend" id="legend"></div>
  <div id="status"></div>
@@ -55,7 +56,7 @@
  <div id="chartwrap"><canvas id="chart"></canvas></div>
  <label class="fld">Del / eksport</label>
  <div class="btnrow"><button class="btn" id="link">Kopier lenke</button><button class="btn" id="geojson">GeoJSON</button><button class="btn" id="csv">CSV</button></div>
- <div class="footer">Punkter på eiendommens representasjonspunkt. 38 objekter mangler matrikkeltreff (ikke på kart, men i eksport). Fredete bygg (svart i «Vernestatus») er hentet fra registreringens vernekolonne. Historisk flyfoto fra Kartverket krever innlogget token; her vises dagens flyfoto (Esri).</div>
+ <div class="footer">Punkter på eiendommens representasjonspunkt. 38 objekter mangler matrikkeltreff (ikke på kart, men i eksport). Fredete bygg (svart i «Vernestatus») er hentet fra registreringens vernekolonne. Historisk flyfoto fra Kartverket krever innlogget token; her vises dagens flyfoto (Esri). Grønn ring rundt et punkt = foto finnes i DigitaltMuseum.</div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -92,7 +93,7 @@ map.addLayer(cluster);
 // ---- state ----
 const years=DATA.filter(r=>r.y).map(r=>r.y);
 const YMIN=Math.min.apply(null,years),YMAX=Math.max.apply(null,years);
-let dim="v",hidden=new Set(),q="",y0=YMIN,y1=YMAX,hideUnd=false;
+let dim="v",hidden=new Set(),q="",y0=YMIN,y1=YMAX,hideUnd=false,onlyPhoto=false;
 const $=id=>document.getElementById(id);
 $('y0').min=$('y1').min=$('slider').min=YMIN; $('y0').max=$('y1').max=$('slider').max=YMAX;
 $('slider').value=YMAX;
@@ -114,6 +115,7 @@ function visible(r){
   const C=dimConf(dim),cat=C.get(r);
   if(hidden.has(cat)) return false;
   if(r.y){ if(r.y<y0||r.y>y1) return false; } else if(hideUnd) return false;
+  if(onlyPhoto && !r.hp) return false;
   if(q){ const hay=((r.ad||'')+' '+(r.be||'')+' '+(r.f||'')).toLowerCase(); if(!hay.includes(q)) return false; }
   return true;
 }
@@ -145,7 +147,9 @@ function updateChart(visRecs){
 }
 function render(){
   const C=dimConf(dim); cluster.clearLayers(); plain.clearLayers(); const vis=[],visRecs=[];
-  for(const o of markers){ if(visible(o.rec)){ o.m.setStyle({fillColor:C.color(C.get(o.rec))}); vis.push(o.m); visRecs.push(o.rec); } }
+  for(const o of markers){ if(visible(o.rec)){ const hp=!!o.rec.hp;
+      o.m.setStyle({fillColor:C.color(C.get(o.rec)), color:hp?'#0a7d28':'#222', weight:hp?2.5:.5});
+      vis.push(o.m); visRecs.push(o.rec); } }
   if(useCluster){ if(map.hasLayer(plain))map.removeLayer(plain); if(!map.hasLayer(cluster))map.addLayer(cluster); cluster.addLayers(vis); }
   else { if(map.hasLayer(cluster))map.removeLayer(cluster); if(!map.hasLayer(plain))map.addLayer(plain); vis.forEach(m=>m.addTo(plain)); }
   $('status').textContent=vis.length+' av '+markers.length+' viste'+( (DATA.length-markers.length)? ' ('+(DATA.length-markers.length)+' uten koordinat)':'')+'.';
@@ -171,6 +175,7 @@ $('y1').addEventListener('change',syncYesFromInputs);
 $('slider').addEventListener('input',e=>{y1=+e.target.value;$('y1').value=y1;render();});
 $('hideund').addEventListener('change',e=>{hideUnd=e.target.checked;render();});
 $('usecluster').addEventListener('change',e=>{useCluster=e.target.checked;render();});
+$('onlyphoto').addEventListener('change',e=>{onlyPhoto=e.target.checked;render();});
 $('all').onclick=()=>{hidden.clear();buildLegend();render();};
 $('none').onclick=()=>{const C=dimConf(dim);markers.forEach(o=>hidden.add(C.get(o.rec)));buildLegend();render();};
 // timeline play
@@ -185,7 +190,7 @@ $('play').onclick=()=>{
 let restoring=false;
 function updateHash(){ if(restoring) return;
   const p=new URLSearchParams();
-  p.set('dim',dim); p.set('y0',y0); p.set('y1',y1); if(hideUnd)p.set('u','1'); if(!useCluster)p.set('c','0'); if(q)p.set('q',q);
+  p.set('dim',dim); p.set('y0',y0); p.set('y1',y1); if(hideUnd)p.set('u','1'); if(!useCluster)p.set('c','0'); if(onlyPhoto)p.set('p','1'); if(q)p.set('q',q);
   if(hidden.size)p.set('h',JSON.stringify([...hidden]));
   history.replaceState(null,'','#'+p.toString());
 }
@@ -198,6 +203,7 @@ function restoreHash(){
     if(p.get('y1')){y1=+p.get('y1');$('y1').value=y1;$('slider').value=y1;}
     if(p.get('u')){hideUnd=true;$('hideund').checked=true;}
     if(p.get('c')==='0'){useCluster=false;$('usecluster').checked=false;}
+    if(p.get('p')){onlyPhoto=true;$('onlyphoto').checked=true;}
     if(p.get('q')){q=p.get('q');$('search').value=q;}
     if(p.get('h')){try{JSON.parse(p.get('h')).forEach(k=>hidden.add(k));}catch(e){}}
   }catch(e){}

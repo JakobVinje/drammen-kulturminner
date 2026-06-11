@@ -27,6 +27,18 @@
  #chartwrap{background:#fff;border:1px solid #eee;border-radius:6px;padding:6px;height:140px}
  .footer{font-size:11px;color:#999;margin-top:12px;line-height:1.45}
  @media(max-width:780px){#map{right:0;bottom:52%}#panel{top:48%;width:auto;left:0;border-left:none;border-top:1px solid #ddd}}
+ #detail{position:absolute;top:0;bottom:0;right:0;width:380px;max-width:90vw;background:#fff;border-left:1px solid #ddd;box-shadow:-4px 0 16px rgba(0,0,0,.08);overflow-y:auto;padding:16px 18px;box-sizing:border-box;z-index:1200;transition:transform .2s ease}
+ #detail.hidden{transform:translateX(110%);pointer-events:none}
+ #detclose{position:absolute;top:10px;right:12px;border:none;background:#eee;border-radius:50%;width:30px;height:30px;font-size:16px;cursor:pointer;line-height:1}
+ #detail h2{font-size:17px;margin:2px 40px 2px 0}
+ #detail .detsub{font-size:12px;color:#666;margin:0 0 10px}
+ #detail dl{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:13px;margin:8px 0}
+ #detail dt{color:#888}#detail dd{margin:0}
+ .detsec{margin-top:14px;border-top:1px solid #eee;padding-top:10px}
+ .detsec h3{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#888;margin:0 0 6px}
+ .kctag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:9px;color:#fff}
+ .kc-h{background:#0a7d28}.kc-m{background:#c8820a}.kc-l{background:#9aa0a6}
+ .detlink{font-size:13px}
 </style></head><body>
 <div id="map"></div>
 <div id="panel">
@@ -57,6 +69,10 @@
  <label class="fld">Del / eksport</label>
  <div class="btnrow"><button class="btn" id="link">Kopier lenke</button><button class="btn" id="geojson">GeoJSON</button><button class="btn" id="csv">CSV</button></div>
  <div class="footer">Punkter på eiendommens representasjonspunkt. 38 objekter mangler matrikkeltreff (ikke på kart, men i eksport). Fredete bygg (svart i «Vernestatus») er hentet fra registreringens vernekolonne. Historisk flyfoto fra Kartverket krever innlogget token; her vises dagens flyfoto (Esri). Grønn ring rundt et punkt = foto finnes i DigitaltMuseum.</div>
+</div>
+<div id="detail" class="hidden">
+  <button id="detclose" title="Lukk">×</button>
+  <div id="detbody"></div>
 </div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
@@ -101,7 +117,9 @@ $('slider').value=YMAX;
 const markers=[];
 for(const r of DATA){ if(!r.ll) continue;
   const m=L.circleMarker(r.ll,{radius:5,color:'#222',weight:.5,fillColor:'#1f77b4',fillOpacity:.85});
-  m.bindPopup(popup(r)); markers.push({rec:r,m}); }
+  m.bindPopup(popup(r));
+  m.on('popupopen',e=>{const b=e.popup.getElement().querySelector('[data-det]'); if(b) b.onclick=()=>openDetail(r);});
+  markers.push({rec:r,m}); }
 function popup(r){
   const row=(k,v)=>v?'<tr><td class="k">'+k+'</td><td>'+v+'</td></tr>':'';
   const bn1=(r.bn||'').match(/\d+/);
@@ -109,8 +127,46 @@ function popup(r){
   return '<div class="pop"><b>'+(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</b><table>'
    +row('Adresse',r.ad)+row('Funksjon',r.f)+row('Kategori',r.kat)+row('Stil',(r.sn&&r.sn!=='Uoppgitt')?r.sn:'')
    +row('Byggeår',r.ar)+row('Kulturmiljø',r.mi)+row('Kulturminneverdi',(VERDI[r.v]||{}).l||r.v)+row('Vernestatus',r.vn)
-   +row('Gnr/Bnr',r.g+'/'+r.bn)+'</table>'+see+'</div>';
+   +row('Gnr/Bnr',r.g+'/'+r.bn)+'</table>'+see
+   +'<div style="margin-top:6px"><button class="btn" data-det="1">Detaljer →</button></div></div>';
 }
+// ---- detail panel ----
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const VTYPE={FPG:"Fredet (forskrift/paragraf)",AUT:"Automatisk fredet",VED:"Vedtaksfredet",LIST:"Listeført",MAB:"Midlertidig fredet"};
+const KCLAB={h:"sikkert treff",m:"trolig treff",l:"mulig treff"};
+function localityLink(km){return 'https://kulturminnesok.no/ra/lokalitet/'+String(km).split('-')[0];}
+let currentDetail=null;
+function heritageSection(r){
+  if(!r.km) return '<div class="detsec"><h3>Kulturminnesøk</h3><div style="font-size:13px;color:#777">Ingen registrert lokalitet i nærheten.</div></div>';
+  const vt=r.kv?(VTYPE[r.kv]||r.kv):'';
+  return '<div class="detsec"><h3>Kulturminnesøk</h3>'
+    +'<div style="font-size:14px;margin-bottom:4px">'+esc(r.kn||'Lokalitet')+' '
+    +'<span class="kctag kc-'+r.kc+'">'+(KCLAB[r.kc]||'')+'</span></div>'
+    +(vt?'<div style="font-size:13px;color:#555">'+esc(vt)+'</div>':'')
+    +'<div style="margin-top:6px"><a class="detlink" target="_blank" rel="noopener" href="'+localityLink(r.km)+'">Se full oppføring på Kulturminnesøk ↗</a></div></div>';
+}
+function detailFields(r){
+  const row=(k,v)=>v?'<dt>'+k+'</dt><dd>'+esc(v)+'</dd>':'';
+  const bn1=(r.bn||'').match(/\d+/);
+  const see=bn1?'<a class="detlink" target="_blank" rel="noopener" href="https://seeiendom.kartverket.no/eiendom/3301/'+esc(r.g)+'/'+bn1[0]+'/0/0">Se eiendom i seeiendom ↗</a>':'';
+  return '<dl>'+row('Adresse',r.ad)+row('Funksjon',r.f)+row('Kategori',r.kat)
+    +row('Stil',(r.sn&&r.sn!=='Uoppgitt')?r.sn:'')+row('Byggeår',r.ar)+row('Kulturmiljø',r.mi)
+    +row('Kulturminneverdi',(VERDI[r.v]||{}).l||r.v)+row('Vernestatus',r.vn)+row('Gnr/Bnr',r.g+'/'+r.bn)+'</dl>'
+    +(see?'<div>'+see+'</div>':'');
+}
+function openDetail(r){
+  currentDetail=r;
+  $('detbody').innerHTML='<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
+    +'<p class="detsub">'+esc(r.ad||'')+'</p>'
+    +'<div class="detsec"><h3>Foto</h3><div id="detphotos">—</div></div>'
+    +heritageSection(r)
+    +'<div class="detsec"><h3>Detaljer</h3>'+detailFields(r)+'</div>';
+  $('detail').classList.remove('hidden');
+  loadPhotos(r);   // defined in Task 3; until then, define a stub (see note)
+  updateHash();
+}
+function closeDetail(){ currentDetail=null; $('detail').classList.add('hidden'); updateHash(); }
+function loadPhotos(r){ $('detphotos').textContent = r.hp ? 'Laster…' : 'Ingen registrerte foto.'; }
 function visible(r){
   const C=dimConf(dim),cat=C.get(r);
   if(hidden.has(cat)) return false;
@@ -176,6 +232,8 @@ $('slider').addEventListener('input',e=>{y1=+e.target.value;$('y1').value=y1;ren
 $('hideund').addEventListener('change',e=>{hideUnd=e.target.checked;render();});
 $('usecluster').addEventListener('change',e=>{useCluster=e.target.checked;render();});
 $('onlyphoto').addEventListener('change',e=>{onlyPhoto=e.target.checked;render();});
+$('detclose').onclick=closeDetail;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail();});
 $('all').onclick=()=>{hidden.clear();buildLegend();render();};
 $('none').onclick=()=>{const C=dimConf(dim);markers.forEach(o=>hidden.add(C.get(o.rec)));buildLegend();render();};
 // timeline play

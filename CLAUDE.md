@@ -13,9 +13,13 @@ Source data: Jo. Sellæg / Drammen kommune cultural-heritage registrations (2004
 from `v2---kulturminneregistreringer-1.pdf`. Drammen's `kommunenummer` is **3301** (used in all
 geocoding API calls).
 
+The project now also includes a Vercel backend (`api/`), an offline enrichment
+script (`scripts/enrich.mjs`), and unit-tested shared logic (`lib/`, `test/`).
+Run tests with `npm test`; run enrichment with `npm run enrich`.
+
 ## Files
 
-- **`kulturminner-kart.html`** — the deliverable. A Leaflet map of every registered object.
+- **`index.html`** — the deliverable. A Leaflet map of every registered object.
   All records are embedded inline as `const DATA=[...]` (line 64; one very long line). Libraries
   load from CDN: Leaflet 1.9.4, leaflet.markercluster 1.5.3, Chart.js 4.4.1. To view: open the
   file in a browser (needs internet for CDN + map tiles).
@@ -44,7 +48,7 @@ filtering, or export logic:
 | `vn` | vernestatus | keys must match `VERN` color map |
 | `fr` | fredet (bool) | |
 
-## Architecture of `kulturminner-kart.html`
+## Architecture of `index.html`
 
 Plain DOM + Leaflet, no framework. Flow: parse `DATA` → build one `L.circleMarker` per record
 with `ll` → `render()` recomputes the visible set on every interaction.
@@ -75,5 +79,5 @@ via Kartverket/Geonorge public APIs:
 
 The page runs a `TASKS` array through 10 concurrent `worker`s, retrying transient failures, and writes
 the result map `{ "MAT|<g>|<bn>": [lat, lon], ... }` to the output textarea as JSON. That JSON is what
-gets merged into the `ll` fields of `DATA` in `kulturminner-kart.html`. Coordinates are rounded to 6
+gets merged into the `ll` fields of `DATA` in `index.html`. Coordinates are rounded to 6
 decimals. Because the APIs are public and live, this must run in a browser (CORS), not headless.

@@ -1,0 +1,11 @@
+{
+  "name": "drammen-kulturminner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kart over registrerte kulturminner i Drammen, med foto (DigitaltMuseum) og kulturminnedata (Kulturminnesøk).",
+  "scripts": {
+    "test": "node --test",
+    "enrich": "node scripts/enrich.mjs"
+  }
+}

@@ -23,13 +23,12 @@
 | `vercel.json` | Minimal config; ensures `api/` functions + static `index.html` route correctly. |
 | `lib/geo.js` | Pure geo math: `haversine`, `confidenceBand`. |
 | `lib/dimu.js` | DigitaltMuseum query/URL builders + response trimming. |
-| `lib/heritage.js` | Kulturminnesøk ArcGIS query URL + nearest-pick + response trimming. |
+| `lib/heritage.js` | Kulturminnesøk WFS BBOX URL builder + GML parser + nearest-pick + baked-field trimming. |
 | `lib/data-io.js` | Parse/replace the `const DATA=[...]` block in `index.html`; read/write file. |
-| `scripts/enrich.mjs` | Offline orchestration: read `index.html` → per-record DiMu count + heritage spatial match → write `hp`/`dq`/`km`/`kc` back; cache + report. |
-| `api/photos.js` | Serverless GET proxy → DiMu gallery for a baked `dq`. |
-| `api/heritage.js` | Serverless GET proxy → Kulturminnesøk locality detail for a baked `km`. |
-| `test/*.test.mjs` | Unit tests (one per `lib` module + the two API handlers). |
-| `test/fixtures/*.json` | Real captured API responses used as test fixtures. |
+| `scripts/enrich.mjs` | Offline orchestration: read `index.html` → per-record DiMu count + heritage WFS spatial match → write `hp`/`dq`/`km`/`kc`/`kn`/`kv` back; cache + report. |
+| `api/photos.js` | Serverless GET proxy → DiMu gallery for a baked `dq`. (The ONLY serverless function — heritage is baked, not live.) |
+| `test/*.test.mjs` | Unit tests (one per `lib` module + the photos API handler). |
+| `test/fixtures/*` | Real captured API responses used as test fixtures (`dimu-search.json`, `wfs-lokalitet.xml`). |
 | `.env.example` | Documents `DIMU_API_KEY`. |
 | `README.md` | Setup + deploy + enrichment run instructions. |
 
@@ -368,13 +367,25 @@ git commit -m "feat(lib): add DigitaltMuseum query builders + response trimming 
 
 ---
 
-## Task 5: `lib/heritage.js` — ArcGIS query + nearest + trim (TDD against fixture)
+## Task 5: `lib/heritage.js` — WFS BBOX query + GML parse + nearest + trim (TDD against fixture)
+
+**REVISED (Option C):** Kulturminnesøk has no public JSON API. The only open source is the
+Geonorge WFS, which returns **GML/XML** (`application/json` is rejected). Heritage detail is
+**baked offline** (it's static registry data), so there is NO live heritage endpoint — this
+module is used only by the enrichment script. It builds a WFS BBOX query, parses the GML for the
+few fields we bake, and picks the nearest locality. Tested against the real raw-GML fixture
+`test/fixtures/wfs-lokalitet.xml` (committed).
+
+Confirmed contract (from the fixture): WFS base `https://wfs.geonorge.no/skwms1/wfs.kulturminner`,
+type `app:Lokalitet`. Per-feature elements: `app:lokalId` (id, e.g. `327939` or `41474-1`),
+`app:navn` (name), `app:vernetype` (e.g. `FPG`/`AUT`), `app:linkKulturminnesøk` (ready-made link),
+geometry as `gml:posList` (space-separated `lat lon lat lon …`, EPSG:4326). Baked keys: `km`=id,
+`kc`=confidence, `kn`=name, `kv`=vernetype. The kulturminnesok.no link is derivable in the UI from
+`km` (`https://kulturminnesok.no/ra/lokalitet/<id-before-any-dash>`), so it is NOT baked.
 
 **Files:**
 - Create: `lib/heritage.js`
 - Test: `test/heritage.test.mjs`
-
-> Reconcile `FEATURE_LAYER_URL` and every `a.*` attribute name against `test/fixtures/arcgis-query.json` and the contracts note.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -383,20 +394,30 @@ git commit -m "feat(lib): add DigitaltMuseum query builders + response trimming 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { queryUrl, pickNearest, trimLocality } from '../lib/heritage.js';
+import { bboxUrl, parseLokaliteter, pickNearest, trimLocality } from '../lib/heritage.js';
 
-const fixture = JSON.parse(readFileSync(new URL('./fixtures/arcgis-query.json', import.meta.url)));
+const gml = readFileSync(new URL('./fixtures/wfs-lokalitet.xml', import.meta.url), 'utf8');
 
-test('queryUrl: point + distance + json', () => {
-  const u = queryUrl(59.744, 10.205, 150);
-  assert.match(u, /\/query\?/);
-  assert.match(u, /distance=150/);
-  assert.match(u, /f=json/);
-  assert.match(u, /esriGeometryPoint/);
+test('bboxUrl: WFS GetFeature for app:Lokalitet with a bbox', () => {
+  const u = bboxUrl(59.744, 10.205, 150);
+  assert.match(u, /request=GetFeature/i);
+  assert.match(u, /typeNames=app%3ALokalitet/i);
+  assert.match(u, /bbox=/i);
 });
 
-test('pickNearest: returns nearest feature with distance', () => {
-  const got = pickNearest(fixture.features, 59.744, 10.205);
+test('parseLokaliteter: extracts features with id/name/coords from real GML', () => {
+  const feats = parseLokaliteter(gml);
+  assert.ok(feats.length >= 1);
+  const f = feats[0];
+  assert.ok(f.id && typeof f.id === 'string');
+  assert.ok(typeof f.navn === 'string');
+  assert.ok(Array.isArray(f.coords) && f.coords.length >= 1);
+  assert.ok(Array.isArray(f.coords[0]) && f.coords[0].length === 2);
+});
+
+test('pickNearest: returns nearest feature with numeric distance', () => {
+  const feats = parseLokaliteter(gml);
+  const got = pickNearest(feats, 59.744, 10.205);
   assert.ok(got && got.feature && typeof got.dist === 'number');
 });
 
@@ -404,10 +425,11 @@ test('pickNearest: null on empty', () => {
   assert.equal(pickNearest([], 59.744, 10.205), null);
 });
 
-test('trimLocality: produces id + url-shaped object', () => {
-  const got = pickNearest(fixture.features, 59.744, 10.205);
-  const loc = trimLocality(got.feature);
-  assert.ok('id' in loc && 'name' in loc && 'url' in loc);
+test('trimLocality: produces baked-field object', () => {
+  const f = parseLokaliteter(gml)[0];
+  const loc = trimLocality(f);
+  assert.ok('id' in loc && 'name' in loc && 'vernetype' in loc && 'link' in loc);
+  assert.match(loc.link, /^https:\/\/kulturminnesok\.no\/ra\/lokalitet\//);
 });
 ```
 
@@ -422,46 +444,72 @@ Expected: FAIL — module not found.
 // lib/heritage.js
 import { haversine } from './geo.js';
 
-// Confirmed in Task 3 against the Geonorge/Riksantikvaren ArcGIS service.
-export const FEATURE_LAYER_URL =
-  '<CONFIRMED FeatureServer/MapServer layer URL from test/fixtures capture>';
+export const WFS_BASE = 'https://wfs.geonorge.no/skwms1/wfs.kulturminner';
+const M_PER_DEG_LAT = 111320; // meters per degree latitude (good enough for small bboxes)
 
-// Spatial query URL: features within `radius` meters of (lat, lon).
-export function queryUrl(lat, lon, radius = 150) {
-  const geometry = JSON.stringify({ x: lon, y: lat, spatialReference: { wkid: 4326 } });
+// WFS GetFeature URL for app:Lokalitet within a square ~half meters around (lat, lon).
+// EPSG:4326 here uses lat,lon axis order, so bbox = minLat,minLon,maxLat,maxLon.
+export function bboxUrl(lat, lon, half = 150) {
+  const dLat = half / M_PER_DEG_LAT;
+  const dLon = half / (M_PER_DEG_LAT * Math.cos((lat * Math.PI) / 180));
+  const bbox = [lat - dLat, lon - dLon, lat + dLat, lon + dLon, 'urn:ogc:def:crs:EPSG::4326'].join(',');
   const params = new URLSearchParams({
-    geometry,
-    geometryType: 'esriGeometryPoint',
-    inSR: '4326',
-    distance: String(radius),
-    units: 'esriSRUnit_Meter',
-    spatialRel: 'esriSpatialRelIntersects',
-    outFields: '*',
-    returnGeometry: 'true',
-    outSR: '4326',
-    f: 'json',
+    service: 'WFS',
+    version: '2.0.0',
+    request: 'GetFeature',
+    typeNames: 'app:Lokalitet',
+    count: '50',
+    srsName: 'urn:ogc:def:crs:EPSG::4326',
+    bbox,
   });
-  return `${FEATURE_LAYER_URL}/query?${params.toString()}`;
+  return `${WFS_BASE}?${params.toString()}`;
 }
 
-function featureCoord(f) {
-  const g = f?.geometry;
-  if (!g) return null;
-  if (typeof g.x === 'number' && typeof g.y === 'number') return [g.y, g.x]; // [lat, lon]
-  const ring = g.rings?.[0];
-  if (ring?.length) {
-    let sx = 0, sy = 0;
-    for (const [x, y] of ring) { sx += x; sy += y; }
-    return [sy / ring.length, sx / ring.length];
-  }
-  return null;
+const decode = (s) =>
+  (s ?? '')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+    .trim();
+
+// First inner text of <app:TAG>…</app:TAG> within a block (TAG may contain non-ASCII like ø).
+function tag(block, name) {
+  const m = block.match(new RegExp(`<app:${name}>([\\s\\S]*?)</app:${name}>`));
+  return m ? decode(m[1]) : '';
+}
+
+// Parse a WFS GML response into plain feature objects.
+export function parseLokaliteter(gml) {
+  // Each feature starts at an opening <app:Lokalitet …> tag.
+  const blocks = String(gml).split(/<app:Lokalitet[\s>]/).slice(1);
+  return blocks.map((b) => {
+    const posList = (b.match(/<gml:posList>([\s\S]*?)<\/gml:posList>/) || [])[1] || '';
+    const nums = posList.trim().split(/\s+/).map(Number).filter((n) => !Number.isNaN(n));
+    const coords = [];
+    for (let i = 0; i + 1 < nums.length; i += 2) coords.push([nums[i], nums[i + 1]]); // [lat, lon]
+    return {
+      id: tag(b, 'lokalId'),
+      navn: tag(b, 'navn'),
+      informasjon: tag(b, 'informasjon'),
+      vernetype: tag(b, 'vernetype'),
+      lokalitetskategori: tag(b, 'lokalitetskategori'),
+      kommune: tag(b, 'kommune'),
+      coords,
+    };
+  });
+}
+
+function centroid(coords) {
+  if (!coords?.length) return null;
+  let sLat = 0, sLon = 0;
+  for (const [la, lo] of coords) { sLat += la; sLon += lo; }
+  return [sLat / coords.length, sLon / coords.length];
 }
 
 // Nearest feature to (lat, lon) → {feature, dist} in meters, or null.
 export function pickNearest(features, lat, lon) {
   let best = null;
   for (const f of features ?? []) {
-    const c = featureCoord(f);
+    const c = centroid(f.coords);
     if (!c) continue;
     const dist = haversine(lat, lon, c[0], c[1]);
     if (!best || dist < best.dist) best = { feature: f, dist };
@@ -469,32 +517,34 @@ export function pickNearest(features, lat, lon) {
   return best;
 }
 
-// Reduce a feature to the minimal detail payload.
-// NOTE: attribute names reconciled against test/fixtures/arcgis-query.json.
+// kulturminnesok.no link from a lokalId: 41474-1 -> /41474, 327939 -> /327939.
+export function localityLink(id) {
+  const num = String(id).split('-')[0];
+  return `https://kulturminnesok.no/ra/lokalitet/${num}`;
+}
+
+// Reduce a parsed feature to the baked-field payload.
 export function trimLocality(feature) {
-  const a = feature?.attributes ?? {};
-  const id = a.LOKALITETID ?? a.LOKALITETSID ?? a.OBJECTID ?? null;
+  const id = feature?.id || '';
   return {
     id,
-    name: a.NAVN ?? a.LOKALITET ?? '',
-    dating: a.DATERING ?? '',
-    protection: a.VERNETYPE ?? a.VERNESTATUS ?? '',
-    description: a.BESKRIVELSE ?? '',
-    url: id != null ? `https://kulturminnesok.no/lokalitet/${id}` : '',
+    name: feature?.navn || '',
+    vernetype: feature?.vernetype || '',
+    link: localityLink(id),
   };
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes** (fill `FEATURE_LAYER_URL`, reconcile fields until green)
+- [ ] **Step 4: Run test to verify it passes**
 
 Run: `node --test test/heritage.test.mjs`
-Expected: PASS.
+Expected: PASS (5 tests).
 
 - [ ] **Step 5: Commit**
 
 ```bash
 git add lib/heritage.js test/heritage.test.mjs
-git commit -m "feat(lib): add Kulturminnesøk ArcGIS query + nearest-match + trimming with tests"
+git commit -m "feat(lib): add Kulturminnesøk WFS BBOX query + GML parser + nearest-match with tests"
 ```
 
 ---
@@ -609,11 +659,11 @@ This is network orchestration; the testable logic already lives in `lib/`. Verif
 
 ```js
 // scripts/enrich.mjs
-// Offline enrichment: bakes hp/dq/km/kc into index.html's DATA.
+// Offline enrichment: bakes hp/dq/km/kc/kn/kv into index.html's DATA.
 // Usage: DIMU_API_KEY=... node scripts/enrich.mjs [--limit N]
 import { readHtml, writeHtml, parseData, replaceData } from '../lib/data-io.js';
 import { buildQuery, countUrl, countHits } from '../lib/dimu.js';
-import { queryUrl, pickNearest, trimLocality } from '../lib/heritage.js';
+import { bboxUrl, parseLokaliteter, pickNearest, trimLocality } from '../lib/heritage.js';
 import { confidenceBand } from '../lib/geo.js';
 import { readFile, writeFile } from 'node:fs/promises';
 
@@ -645,6 +695,19 @@ async function fetchJson(url, tries = RETRIES) {
   }
 }
 
+async function fetchText(url, tries = RETRIES) {
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
+    } catch (e) {
+      if (i === tries - 1) throw e;
+      await new Promise((r) => setTimeout(r, 400 * (i + 1)));
+    }
+  }
+}
+
 async function loadCache() {
   try { return JSON.parse(await readFile(CACHE_PATH, 'utf8')); }
   catch { return {}; }
@@ -667,18 +730,21 @@ async function enrichOne(r, cache, report) {
     report.push({ id, dq, dimuError: String(e) });
   }
 
-  // Kulturminnesøk: spatial nearest -> km + kc (only if coordinates exist)
+  // Kulturminnesøk: WFS BBOX -> parse GML -> nearest -> km/kc/kn/kv (only if coordinates exist)
   if (Array.isArray(r.ll)) {
     const [lat, lon] = r.ll;
     try {
-      const json = await fetchJson(queryUrl(lat, lon, 150));
-      const near = pickNearest(json.features, lat, lon);
+      const gml = await fetchText(bboxUrl(lat, lon, 150));
+      const feats = parseLokaliteter(gml);
+      const near = pickNearest(feats, lat, lon);
       if (near) {
         const kc = confidenceBand(near.dist);
         if (kc) {
           const loc = trimLocality(near.feature);
           result.km = loc.id;
           result.kc = kc;
+          result.kn = loc.name;
+          result.kv = loc.vernetype;
           report.push({ id, kmDist: Math.round(near.dist), kc, kmId: loc.id });
         }
       }
@@ -716,7 +782,7 @@ async function main() {
 
   await pool(targets, CONCURRENCY, async (r) => {
     const res = await enrichOne(r, cache, report);
-    Object.assign(r, res); // write hp/dq/km/kc onto the record in place
+    Object.assign(r, res); // write hp/dq/km/kc/kn/kv onto the record in place
     if (++done % 50 === 0) {
       process.stdout.write(`  ${done}/${targets.length}\n`);
       await writeFile(CACHE_PATH, JSON.stringify(cache, null, 2));
@@ -751,7 +817,7 @@ Expected: only `scripts/enrich.mjs` is untracked/new.
 
 ```bash
 git add scripts/enrich.mjs
-git commit -m "feat(scripts): add offline enrichment (hp/dq/km/kc) with cache + report"
+git commit -m "feat(scripts): add offline enrichment (hp/dq/km/kc/kn/kv) with cache + report"
 ```
 
 - [ ] **Step 5: Full enrichment run (writes index.html)**
@@ -763,7 +829,7 @@ Expected: "Wrote enrichment for N records into index.html". Then `git diff --sta
 
 ```bash
 git add index.html
-git commit -m "data: bake hp/dq/km/kc into DATA via enrichment run"
+git commit -m "data: bake hp/dq/km/kc/kn/kv into DATA via enrichment run"
 ```
 
 ---
@@ -865,113 +931,15 @@ git commit -m "feat(api): add DiMu photos proxy with validation, caching, error 
 
 ---
 
-## Task 9: `api/heritage.js` — Kulturminnesøk detail proxy (TDD with stubbed fetch)
+## Task 9: ~~`api/heritage.js` — Kulturminnesøk detail proxy~~ — REMOVED (Option C)
 
-**Files:**
-- Create: `api/heritage.js`
-- Test: `test/heritage.api.test.mjs`
+**This task is intentionally dropped.** Investigation during Task 3 established that Kulturminnesøk
+has no public JSON API (WFS is GML-only; the ArcGIS REST service is decommissioned). Because heritage
+registry data is *static*, the chosen design (Option C) bakes the heritage match (`km`/`kc`/`kn`/`kv`)
+into `DATA` during enrichment (Task 7) and links out to kulturminnesok.no for the full record. There
+is therefore **no live heritage endpoint** — `api/photos.js` (Task 8) is the only serverless function.
 
-> The detail proxy fetches a single locality by id. Confirm in Task 3 whether the layer supports `?where=<idfield>=<km>` queries; the implementation below uses a `where` filter on the confirmed id field.
-
-- [ ] **Step 1: Write the failing test**
-
-```js
-// test/heritage.api.test.mjs
-import { test, afterEach } from 'node:test';
-import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
-import handler from '../api/heritage.js';
-
-const fixture = JSON.parse(readFileSync(new URL('./fixtures/arcgis-query.json', import.meta.url)));
-const realFetch = globalThis.fetch;
-afterEach(() => { globalThis.fetch = realFetch; });
-
-function mockRes() {
-  return {
-    statusCode: 200, headers: {}, body: null,
-    setHeader(k, v) { this.headers[k] = v; },
-    status(c) { this.statusCode = c; return this; },
-    json(b) { this.body = b; return this; },
-  };
-}
-
-test('heritage: 400 when km missing', async () => {
-  const res = mockRes();
-  await handler({ query: {} }, res);
-  assert.equal(res.statusCode, 400);
-});
-
-test('heritage: returns trimmed locality on success', async () => {
-  globalThis.fetch = async () => ({ ok: true, json: async () => fixture });
-  const res = mockRes();
-  await handler({ query: { km: '12345' } }, res);
-  assert.equal(res.statusCode, 200);
-  assert.ok('id' in res.body && 'name' in res.body);
-  assert.match(res.headers['Cache-Control'] || '', /s-maxage/);
-});
-
-test('heritage: 404 when no feature matches', async () => {
-  globalThis.fetch = async () => ({ ok: true, json: async () => ({ features: [] }) });
-  const res = mockRes();
-  await handler({ query: { km: '999' } }, res);
-  assert.equal(res.statusCode, 404);
-});
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `node --test test/heritage.api.test.mjs`
-Expected: FAIL — module not found.
-
-- [ ] **Step 3: Write the implementation**
-
-```js
-// api/heritage.js
-import { FEATURE_LAYER_URL, trimLocality } from '../lib/heritage.js';
-
-// Confirmed id field name from Task 3 (e.g. LOKALITETID).
-const ID_FIELD = 'LOKALITETID';
-
-function detailUrl(km) {
-  const params = new URLSearchParams({
-    where: `${ID_FIELD}=${km}`,
-    outFields: '*',
-    returnGeometry: 'false',
-    f: 'json',
-  });
-  return `${FEATURE_LAYER_URL}/query?${params.toString()}`;
-}
-
-export default async function handler(req, res) {
-  const km = (req.query?.km || '').toString();
-  if (!km || !/^[0-9]{1,12}$/.test(km)) {
-    return res.status(400).json({ error: 'missing or invalid km' });
-  }
-  try {
-    const r = await fetch(detailUrl(km));
-    if (!r.ok) return res.status(502).json({ error: `upstream ${r.status}` });
-    const json = await r.json();
-    const feature = json.features?.[0];
-    if (!feature) return res.status(404).json({ error: 'not found' });
-    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate');
-    return res.status(200).json(trimLocality(feature));
-  } catch (e) {
-    return res.status(502).json({ error: 'upstream fetch failed' });
-  }
-}
-```
-
-- [ ] **Step 4: Run test to verify it passes** (set `ID_FIELD` to the confirmed name)
-
-Run: `node --test test/heritage.api.test.mjs`
-Expected: PASS (3 tests).
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add api/heritage.js test/heritage.api.test.mjs
-git commit -m "feat(api): add Kulturminnesøk detail proxy with validation + tests"
-```
+Nothing to implement. Proceed to Task 10.
 
 ---
 
@@ -995,36 +963,36 @@ DIMU_API_KEY=demo
 # Drammen kulturminner
 
 Interactive Leaflet map of registered cultural-heritage objects in Drammen, with
-photos (DigitaltMuseum) and heritage details (Kulturminnesøk).
+photos (DigitaltMuseum, live) and heritage matches (Kulturminnesøk, baked).
 
 ## Run locally
-Open `index.html` in a browser. The map, filters, and baked data work offline;
-the live photo gallery / heritage detail only work when served with the `api/`
-functions (i.e. on Vercel or `vercel dev`).
+Open `index.html` in a browser. The map, filters, and baked data (incl. the
+heritage match + link-out) work offline; only the live photo gallery needs the
+`api/` function (i.e. on Vercel or `vercel dev`).
 
 ## Tests
 `npm test`  (Node's built-in runner; no dependencies)
 
 ## Re-run enrichment
-Bakes `hp`/`dq`/`km`/`kc` into `index.html`'s `DATA`:
+Bakes `hp`/`dq`/`km`/`kc`/`kn`/`kv` into `index.html`'s `DATA`:
 `DIMU_API_KEY=<key> npm run enrich`     (use `--limit N` for a dry run)
 
 ## Deploy (Vercel)
 1. Import the GitHub repo at vercel.com, or run `vercel` from this folder.
 2. Set `DIMU_API_KEY` in Project → Settings → Environment Variables.
-3. `index.html` is served statically; `api/*.js` become serverless functions.
+3. `index.html` is served statically; `api/photos.js` becomes a serverless function.
 ```
 
 - [ ] **Step 3: Full test sweep**
 
 Run: `npm test`
-Expected: all suites PASS (geo, dimu, heritage, data-io, photos.api, heritage.api).
+Expected: all suites PASS (geo, dimu, heritage, data-io, photos.api).
 
 - [ ] **Step 4: Local serverless smoke test (optional but recommended)**
 
 Run: `npx vercel dev` then in another shell:
 `curl "http://localhost:3000/api/photos?dq=Drammen+Bragernes"` → JSON array
-`curl "http://localhost:3000/api/heritage?km=<a real km from enrich-report.json>"` → JSON object
+(Heritage needs no endpoint — it's baked; verify a baked `km`/`kn`/`kv` exists in `index.html` after enrichment.)
 
 - [ ] **Step 5: Commit + push**
 
@@ -1036,17 +1004,18 @@ git push
 
 ---
 
-## Self-Review (completed during planning)
+## Self-Review (updated after the Option C revision)
 
 **Spec coverage:**
-- Vercel + thin proxy → Tasks 1, 8, 9, 10. ✓
-- `hp`/`dq`/`km`/`kc` data model → Tasks 4, 5, 7 (baked); consumed in Plan 2. ✓
-- Offline enrichment (count + spatial, concurrency, retry, cache, report, idempotent) → Task 7. ✓
+- Vercel + thin proxy → Tasks 1, 8, 10 (photos is the only function). ✓
+- `hp`/`dq`/`km`/`kc`/`kn`/`kv` data model → Tasks 4, 5, 7 (all baked); consumed in Plan 2. ✓
+- Offline enrichment (DiMu count + heritage WFS spatial, concurrency, retry, cache, report, idempotent) → Task 7. ✓
 - DiMu key server-side, `demo` fallback → Tasks 7, 8, 10. ✓
 - Spatial confidence bands 25/75/150 → Task 2. ✓
+- Heritage source decision (no public JSON API) → resolved as Option C: bake match + link out; Task 9 removed. ✓
 - Graceful local degradation → documented (README Task 10); UI behavior is Plan 2. ✓
 - **Deferred to Plan 2 (UI):** detail side-panel, "has photo" filter + marker ring, `obj=` deep-link, mobile bottom-sheet. Intentional split.
 
-**Placeholder scan:** The only intentional fill-ins are the live API specifics (`FEATURE_LAYER_URL`, `ID_FIELD`, DiMu field paths), which Task 3 captures as real fixtures *before* any dependent code is written — the tests, run against those fixtures, are the source of truth.
+**Placeholder scan:** No unresolved fill-ins. All API specifics are now pinned to real captured fixtures (`test/fixtures/dimu-search.json`, `test/fixtures/wfs-lokalitet.xml`); the synthetic ArcGIS JSON fixture was removed.
 
-**Type consistency:** `parseData`/`replaceData`, `buildQuery`/`searchUrl`/`countUrl`/`countHits`/`trimPhotos`, `queryUrl`/`pickNearest`/`trimLocality` (returning `{feature, dist}` and `{id,name,...}`), `confidenceBand` returning `'h'|'m'|'l'|null` — names and shapes match across the script and API handlers.
+**Type consistency:** `parseData`/`replaceData`; `buildQuery`/`searchUrl`/`countUrl`/`countHits`/`trimPhotos`; heritage `bboxUrl`/`parseLokaliteter` (→ `{id,navn,vernetype,coords,…}`)/`pickNearest` (→ `{feature,dist}`)/`trimLocality` (→ `{id,name,vernetype,link}`)/`localityLink`; `confidenceBand` → `'h'|'m'|'l'|null`. Enrichment maps `trimLocality` output to baked keys `km`(id)/`kn`(name)/`kv`(vernetype) plus `kc` from `confidenceBand`. Names/shapes are consistent across `lib/`, the enrichment script, and `api/photos.js`.

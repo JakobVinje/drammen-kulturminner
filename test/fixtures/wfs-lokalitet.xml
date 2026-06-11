@@ -1,0 +1,502 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wfs:FeatureCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/wfs/2.0 http://schemas.opengis.net/wfs/2.0/wfs.xsd http://www.opengis.net/gml/3.2 http://schemas.opengis.net/gml/3.2.1/gml.xsd http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217 https://wfs.geonorge.no/skwms1/wfs.kulturminner?SERVICE=WFS&amp;VERSION=2.0.0&amp;REQUEST=DescribeFeatureType&amp;OUTPUTFORMAT=text%2Fxml%3B+subtype%3Dgml%2F3.2.1&amp;TYPENAME=app:Lokalitet&amp;NAMESPACES=xmlns(app,http%3A%2F%2Fskjema.geonorge.no%2FSOSI%2Fproduktspesifikasjon%2FLokaliteterEnkeltminnerOgSikringssoner%2F20210217)" xmlns:wfs="http://www.opengis.net/wfs/2.0" timeStamp="2026-06-11T09:10:48Z" xmlns:gml="http://www.opengis.net/gml/3.2" numberMatched="unknown" numberReturned="0">
+  <!--NOTE: numberReturned attribute should be 'unknown' as well, but this would not validate against the current version of the WFS 2.0 schema (change upcoming). See change request (CR 144): https://portal.opengeospatial.org/files?artifact_id=43925.-->
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.272695">
+      <app:datafangstdato>1995-09-27T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>84987-1</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2024-01-06T10:34:57</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2004-02-06T19:50:27</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T23:29:16.062</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>24</app:målemetode>
+          <app:nøyaktighet>20</app:nøyaktighet>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:opphav>Riksantikvaren, Hovedkontor</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.272695_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.272695_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.742564 10.186705 59.742562 10.186612 59.742508 10.186617 59.742510 10.186712 59.742480 10.186715 59.742488 10.186991 59.742483 10.186991 59.742485 10.187064 59.742501 10.187062 59.742501 10.187071 59.742546 10.187066 59.742592 10.187060 59.742591 10.187031 59.742606 10.187030 59.742605 10.186977 59.742602 10.186978 59.742594 10.186702 59.742564 10.186705</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Strømsgodset kirkested</app:navn>
+      <app:kulturminneId>84987-1</app:kulturminneId>
+      <app:antallEnkeltminner>1</app:antallEnkeltminner>
+      <app:synlig>true</app:synlig>
+      <app:lokalitetskategori>L-KRK</app:lokalitetskategori>
+      <app:lokalitetsart>20103</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:opprinneligFunksjon>2700</app:opprinneligFunksjon>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>KIR</app:vernelov>
+          <app:vernetype>LIST</app:vernetype>
+          <app:vernedato>2000-11-21</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=84987-1</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/84987</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.274910">
+      <app:datafangstdato>1993-06-26T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>86455</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2025-06-24T11:43:56</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2004-02-06T19:59:38</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T23:29:32.270</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>99</app:målemetode>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Bangegården (Tollbugata 62) ligger på nedre del av Strømsø i Drammen, mellom Tollbugata og Tordenskiolds gate, i et område med mye eldre bebyggelse. Anlegget omfatter en hovedbygning med sidefløy, en drengestue og flere sammenhengende uthusbygninger mot Treschows gate, samt to bygninger på grensen mot naboeiendommen i nordvest som ikke er omfattet av fredningen. Hovedbygningen ligger med front ut mot Tollbugata, som tidligere ble kalt Fremgaten, Storgaten eller Strømsø storgate. Utover på 1700- og 1800-tallet ble denne gata mer og mer sentral for flere av byens handelshus, og her finnes flere fredete bygårder fra perioden. Drengestua ligger bak hovedbygningen, og danner et skille i gårdsrommet mellom fremgård og bakgård. Fremgården er hellebelagt, og er tilgjengelig gjennom et portrom mellom sidefløyen og drengestua. Så sent som på 1970-tallet var det parkeringsplass her, men selve helleleggingen er avbildet alt på 1920-tallet.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.274910_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.274910_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.735411 10.213549 59.735411 10.213548 59.735410 10.213539 59.735407 10.213532 59.735292 10.213362 59.735288 10.213359 59.735283 10.213360 59.735280 10.213366 59.735242 10.213467 59.735240 10.213476 59.735240 10.213485 59.735243 10.213492 59.735265 10.213523 59.735251 10.213559 59.735250 10.213567 59.735250 10.213576 59.735253 10.213583 59.735275 10.213615 59.735296 10.213646 59.735300 10.213649 59.735305 10.213648 59.735308 10.213642 59.735321 10.213607 59.735380 10.213695 59.735373 10.213715 59.735371 10.213723 59.735372 10.213732 59.735375 10.213740 59.735380 10.213748 59.735366 10.213786 59.735364 10.213795 59.735365 10.213804 59.735367 10.213811 59.735388 10.213841 59.735409 10.213873 59.735413 10.213876 59.735418 10.213875 59.735422 10.213869 59.735488 10.213692 59.735490 10.213683 59.735489 10.213674 59.735487 10.213667 59.735446 10.213604 59.735411 10.213549</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Bangegården (Tollbugata 62/Banggården)</app:navn>
+      <app:kulturminneId>86455</app:kulturminneId>
+      <app:antallEnkeltminner>5</app:antallEnkeltminner>
+      <app:synlig>true</app:synlig>
+      <app:lokalitetskategori>L-BVF</app:lokalitetskategori>
+      <app:lokalitetsart>20119</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>BFL</app:vernelov>
+          <app:verneparagraf>1 (Utgått paragraf)</app:verneparagraf>
+          <app:vernetype>VED</app:vernetype>
+          <app:vernedato>1923-01-01</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=86455</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/86455</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.274916">
+      <app:datafangstdato>1994-11-18T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>86459</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2025-06-24T11:43:56</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2004-02-06T19:59:38</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T23:29:32.372</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>99</app:målemetode>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Børneasylet (Tollbugata 48) ligger på nedre del av Strømsø i Drammen, mellom Tollbugata og Tordenskiolds gate, i et område med mye eldre bebyggelse. Anlegget består av en hovedbygning og to sidebygninger. På gårdsplassen bak er det flere store trær og en velstelt hage. Et nytt uthus med boder fra 1996 avgrenser hagen i bakkant. Hovedbygningen ligger med front ut mot Tollbugata, som tidligere ble kalt Fremgaten, Storgaten eller Strømsø storgate. Utover på 1700- og 1800-tallet ble denne gata mer og mer sentral for flere av byens handelshus, og her finnes flere fredete bygårder fra perioden. Magasinet som ble reist i 1782 stod på Gyldenløvesplass like ved, men dette brant i 1827.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.274916_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.274916_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.736244 10.210280 59.736230 10.210328 59.736216 10.210379 59.736215 10.210388 59.736216 10.210397 59.736219 10.210403 59.736443 10.210657 59.736447 10.210659 59.736452 10.210657 59.736455 10.210650 59.736484 10.210551 59.736485 10.210542 59.736484 10.210534 59.736480 10.210527 59.736257 10.210273 59.736252 10.210271 59.736248 10.210273 59.736244 10.210280</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Børneasylet (Tollbugata 48/Rørbygården)</app:navn>
+      <app:kulturminneId>86459</app:kulturminneId>
+      <app:antallEnkeltminner>3</app:antallEnkeltminner>
+      <app:synlig>true</app:synlig>
+      <app:lokalitetskategori>L-BVF</app:lokalitetskategori>
+      <app:lokalitetsart>20152</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>BFL</app:vernelov>
+          <app:verneparagraf>1 (Utgått paragraf)</app:verneparagraf>
+          <app:vernetype>VED</app:vernetype>
+          <app:vernedato>1923-06-06</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=86459</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/86459</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.274918">
+      <app:datafangstdato>1993-06-26T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>86460-1</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2024-01-06T13:37:05</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2004-02-06T19:59:39</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T23:29:32.373</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>99</app:målemetode>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Beskrivelse fra lokalitet:
+Drammens handelsgymnasium ligger på nedre del av Strømsø i Drammen, mellom Tollbugata og Tordenskiolds gate, i et område med mye eldre bebyggelse. Den fredete bygården er sammenbygd med en murt skolebygning i funkisstil fra begynnelsen av 1950-årene, og i tillegg finnes en skolebygning i bindingsverk fra 1970-tallet på eiendommen. Drammen handelsgymnasium ligger langs Tollbugata, tidligere kalt Fremgaten, Storgaten eller Strømsø storgate. Utover på 1700- og 1800-tallet ble gata mer og mer sentral for flere av byens handelshus, og her finnes flere fredete bygårder fra denne perioden. Like bak ligger Strømsø kirke, en korskirke fra 1667, som er av de eldste bygningene i Drammen. Flere utbygginger og reguleringsplaner, særlig på 1940- og 1950-tallet, har vært uheldig for bygningsmiljøet, og både Tollbugata og skolegården er asfaltert helt inntil den fredete bygningen. Et stort tre er imidlertid bevart inne i skolegården.
+
+Beskrivelse fra Enkeltminne:
+Bygården ble reist som rådhus for Strømsø i 1808, i en blanding av louis-seize- og empirestil. Arkitekt var Christian Staalberg. Mansardtaket kan virke noe alderdommelig i forhold til resten av bygningen, noe som kan skyldes at takformen beholdt sin posisjon som statussymbol. Siden 1816 har den fungert som skolebygning. Omkring 1870 ble inngangspartiet flyttet, samt at det ble satt inn flere vinduer. Hovedinngangen har trolig alltid vært mot sørvest, vendt mot Strømsø kirke, men den stod tidligere sentralt på langveggen. Før dette hadde siden mot skoleplassen (og Strømsø kirke) en symmetrisk utforming med fem krysspostvinder i stedet for syv, samt to halvbuede vinduer. Mot sørvest var det tidligere tre arker som senere ble erstattet med fem (panelet på siden av arkene virker også yngre, og smalere enn panelet på veggene for øvrig). Mot nordøst fikk man i stedet brutt inn vinduer i mansarden. Innvendig er flere av de gamle avbindingsveggene fjernet, noe som har gitt behov for strekkfisker. Bygningen ble istandsatt flere ganger på 1900-tallet, og har fungert som videregående skole frem til i dag.&#xd;&#xd;Panelt tømmerbygning i 2,5 etasje som måler ca 25,5 x 12,5 m, reist på en kistemur av naturstein. Muren er pusset med betong. De laftede veggene mangler imidlertid laftekasser, og de fire utfôringene i fasaden er strekkfisker som er ment å stive av veggene etter at innvendige tømmervegger er blitt fjernet. Veggene er panelt med gulgrått stående slettpanel med horisontalbånd mellom etasjene, og skal illudere slettpussede murvegger. Kvaderinndelte siderisalitter med horisontalt skyggepanel på fasaden, samt på kortsiden mot sørøst. Foruten enkelte nyere utskiftninger virker panelet å være originalt mot Tollbugata. Kvaderinndelingen mangler mot sørvest. I dag er inngangspartiet lengst øst, og består av en moderne tofløyet glassdør. Trappen har jernrekkverk, og består av betong med trinn av rød granittstein. Vinduene i 1. etasje er empirevinduer med tre ruter i hver ramme, mens det er krysspostvinduer i 2. etasje. Disse har ulik alder (stabelhengsler, dråpehengsler og eldre bladhengsler). Benhvit belistning. Spor etter eldre markiser. Mansardtak med en liten svai i nedre del, tekket av sort, glassert teglstein på tømmermannstro. Pipene er fjernet. Nytt ventilasjonsanlegg er anlagt, og føres inn til bygningen fra nabobygningen i vest. I hver av de fem arkene mot sørvest er det et treramsvindu med tre ruter. Enkelte av de midterste rammene er overhengslet, mens andre er sidehengslet på en av midtpostene. Takvinduene mot sørøst og nordøst har 3 x 3 ruter, hvorav det i midten kan åpnes. Under nederste takflate er det en profilert gesims med tannsnitt.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.274918_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.274918_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.736965 10.208925 59.736941 10.208985 59.736936 10.208978 59.736783 10.209341 59.736884 10.209484 59.737036 10.209124 59.737031 10.209118 59.737053 10.209065 59.737019 10.209011 59.736981 10.208951 59.736965 10.208925</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>DRAMMEN HANDELSGYMNASIUM (TOLLBUGATA 42) / Skolebygning</app:navn>
+      <app:kulturminneId>86460-1</app:kulturminneId>
+      <app:antallEnkeltminner>1</app:antallEnkeltminner>
+      <app:synlig>true</app:synlig>
+      <app:lokalitetskategori>L-BVF</app:lokalitetskategori>
+      <app:lokalitetsart>20129</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:opprinneligFunksjon>2800</app:opprinneligFunksjon>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>BFL</app:vernelov>
+          <app:verneparagraf>1 (Utgått paragraf)</app:verneparagraf>
+          <app:vernetype>VED</app:vernetype>
+          <app:vernedato>1923-06-06</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=86460-1</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/86460</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.274922">
+      <app:datafangstdato>1993-06-26T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>86463-1</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2024-02-01T14:18:31</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2004-02-06T19:59:39</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T23:29:32.375</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>99</app:målemetode>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon> Norges Banks bygning ble reist i 1840-1842, i senempirestil. Byggmestere var Christian Hermann Malling og Jens Conrad Seidelin. Rosettene i taket ble støpt av Giacinto eller Pietro Guidotti, og støpejernsarbeidene (jernlemmer, magasinovn etc) var utført på Bærums verk. Ellers ble det benyttet materialer fra hele distriktet, i form av teglstein, kalk, granitt og gråstein. En benyttet også gråstein fra den store magasintomten på Gyldenløves plass. Bygningen var opprinnelig grå og umalt, mens taket hadde blå, glassert takstein. Den ble malt for første gang på 1850-tallet, og fikk da om lag samme farge som i dag. Senere har den også hatt andre farger. På 1880-tallet ble den gamle trappeoppgangen i tre erstattet av en sementrapp. Den gamle hadde gått i ett løp, rundt de tre veggene fra venstre til høyre når en kom inn hoveddøra, mens den nye sementtrappa ble delt i to fra midten. En beholdt imidlertid støpejernsrekkverket fra den opprinnelige tretrappa. Ellers stod bygningen nærmest uforandret frem en større istandsetting av interiøret omkring 1930. Trappa ble nå flyttet lengre inn, og den tidligere bæreveggen mellom trapperommet og ekspedisjonsrommet ble fjernet og erstattet med en rekke av klassisistiske marmorsøyler og pilastrer fra Belgia. Ekspedisjonen ble da flyttet nærmere gata, med skranke mellom søylerekken, noe som ga bedre belysning. Det er også gjort noen endringer i senere år, særlig i forbindelse med istandsettingen i 2003-2004 da Sparebanken Øst tok over. Bygningen benyttes fremdeles som bank.Treetasjes pusset teglsteinsbygning, bygd sammen med sidebygningen av en ny glassvestibyle. Bankbygningen er reist på en grunnmur av rød granitt, som så vidt er synlig over bakkenivå. Over dette består veggene av tykke og kompakte teglsteinsmurer, som er pusset både innvendig og utvendig. Pilastrer og kvaderinndeling på hjørner og sokkel. Fasaden mot Strømsø Torg har en symmetrisk fremtoning, og er delt inn i fem røde felt av fire flate pilastre i tillegg til de hvite kvaderinndelte hjørnene. I hvert av feltene er det et stort vindu med 4 x 8 ruter. Disse vinduene er nye, men ligner de originale. Sokkelen er også kvaderinndelt, men denne er malt i en mørkere grå farge. Her er det to par vindu med fire ruter på hver side av hovedinngangen. Tofløyet hoveddør i kopi av den originale (som er bevart på loftet), men omrammingen med innskriften &amp;"Norges Bank&amp;" er trolig original. Baksiden ligner frontfasaden, men her har det skjedd en del endringer. I tillegg til det nye glassbygget er det tatt ut hull i veggen til dører, heis og minibank. Mot sørvest er det to parvise vindu i sokkelen, hvorav to bare har lufteluker. Mot nordøst er det imidlertid ingen åpninger i murverket. Valmtak, tekket med svart, glassert takstein. Konsollene under gesimsen er utstøpt på tresperrene. To teglsteinspiper. Enkelte av takrennene har eldre deler, men det meste er skiftet. </app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.274922_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.274922_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.739889 10.201548 59.739901 10.201498 59.739884 10.201482 59.739923 10.201323 59.739821 10.201223 59.739781 10.201382 59.739757 10.201359 59.739744 10.201413 59.739723 10.201394 59.739665 10.201627 59.739877 10.201834 59.739937 10.201594 59.739889 10.201548</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Norges Banks bygning / Bankbygning</app:navn>
+      <app:kulturminneId>86463-1</app:kulturminneId>
+      <app:antallEnkeltminner>1</app:antallEnkeltminner>
+      <app:synlig>true</app:synlig>
+      <app:lokalitetskategori>L-BVF</app:lokalitetskategori>
+      <app:lokalitetsart>20155</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:opprinneligFunksjon>1900</app:opprinneligFunksjon>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>BFL</app:vernelov>
+          <app:verneparagraf>1 (Utgått paragraf)</app:verneparagraf>
+          <app:vernetype>VED</app:vernetype>
+          <app:vernedato>1967-05-13</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=86463-1</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/86463</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.275184">
+      <app:datafangstdato>1993-06-27T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>86586</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2025-06-24T11:43:56</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2004-02-06T20:00:15</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T23:29:33.932</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>99</app:målemetode>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Smithestrøm ligger på Strømsø i Drammen, på en morenerygg med god utsikt over byen i sør og øst. I tillegg til den fredete hovedbygningen fra 1767-1788, består anlegget av to verneverdige sidebygninger fra 1780 og 1870 og et nylig tilflyttet lysthus med garasje i hagen. Gårdstunet har delvis gressdekke, med fire symmetrisk plantede trær foran hovedbygningen. Hagen med allé, trapper og terrasser utgjør en viktig grønn lomme i en ellers sterkt utbygd bydel.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.275184_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.275184_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.740166 10.185709 59.740150 10.185708 59.740145 10.185711 59.740142 10.185717 59.740141 10.185726 59.740140 10.185789 59.740139 10.185851 59.740140 10.185860 59.740144 10.185866 59.740148 10.185869 59.740162 10.185870 59.740161 10.185895 59.740162 10.185904 59.740166 10.185910 59.740170 10.185913 59.740417 10.185923 59.740421 10.185921 59.740425 10.185915 59.740426 10.185906 59.740428 10.185698 59.740427 10.185689 59.740424 10.185682 59.740419 10.185680 59.740175 10.185670 59.740171 10.185672 59.740167 10.185678 59.740166 10.185687 59.740166 10.185709</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Smithestrøm (Smith-Strøm)</app:navn>
+      <app:kulturminneId>86586</app:kulturminneId>
+      <app:antallEnkeltminner>2</app:antallEnkeltminner>
+      <app:synlig>true</app:synlig>
+      <app:lokalitetskategori>L-BVF</app:lokalitetskategori>
+      <app:lokalitetsart>20151</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>BFL</app:vernelov>
+          <app:verneparagraf>1 (Utgått paragraf)</app:verneparagraf>
+          <app:vernetype>VED</app:vernetype>
+          <app:vernedato>1923-02-01</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=86586</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/86586</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.277436">
+      <app:datafangstdato>2002-06-13T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>87634</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2025-06-24T11:43:56</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2004-02-06T20:05:14</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T23:29:46.826</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>82</app:målemetode>
+          <app:nøyaktighet>500</app:nøyaktighet>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Cappelengården er en handelsgård. Eiendommen Tollbugata 54 strakk seg tidligere tvers gjennom kvartalet mellom Tollbugata og Tordenskiolds gate, men i 1996 ble eiendommen delt i to. Hovedbygningen og kontorbygningen i Tolbbugata 54 ligger på oversiden av Tollbugata. Bygningene ligger i gatelinjen og har hovedfasader mot denne. Kjøpmannen og trelasthandler Peder Arbo eide gården fra 1716 til 1751. Sammen med hans halvbror Mads Wiel frav han byens mest betydningsfulle handelshus, Arbo og Wiel. Senere eiere har vært; Amtmannen Andreas Fjeldsted, amtmannen Peter Collett og Peder von Cappelen. Cappelen eide Tollbugata 54 i over 50 år og var en av Drammen bys fremste menn i tiden 1784-1837.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.277436_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.277436_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.735495 10.212832 59.735418 10.212729 59.735397 10.212792 59.735377 10.212850 59.735515 10.213033 59.735500 10.213078 59.735509 10.213090 59.735522 10.213054 59.735565 10.213117 59.735570 10.213105 59.735658 10.213224 59.735739 10.213347 59.735673 10.213519 59.735844 10.213796 59.736184 10.212889 59.736014 10.212649 59.735912 10.212571 59.735694 10.212282 59.735495 10.212832</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Tollbugata 54 (Cappelengården)</app:navn>
+      <app:kulturminneId>87634</app:kulturminneId>
+      <app:antallEnkeltminner>8</app:antallEnkeltminner>
+      <app:synlig>true</app:synlig>
+      <app:lokalitetskategori>L-BVF</app:lokalitetskategori>
+      <app:lokalitetsart>20119</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>KML</app:vernelov>
+          <app:verneparagraf>15 (Fredning av bygninger, anlegg m.v. fra nyere tid)</app:verneparagraf>
+          <app:vernetype>VED</app:vernetype>
+          <app:vernedato>2002-04-29</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=87634</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/87634</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.24617">
+      <app:datafangstdato>2007-12-01T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>124799-1</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2024-01-06T13:37:05</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2009-02-17T10:24:28</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T22:52:36.100</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>82</app:målemetode>
+          <app:nøyaktighet>5000</app:nøyaktighet>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Admiralitetsanker med avtagbar jernstokk. Godt bevart, men flikene tynne/noe forvitret. Sveise-skjøtene på armene, stor røring, tynn kjetting og flikene gir en datering mellom 1830 og 1850. Ankeret er smidd.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.24617_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.24617_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.745108 10.186922 59.745113 10.186919 59.745116 10.186912 59.745117 10.186903 59.745115 10.186894 59.745112 10.186888 59.745107 10.186886 59.745103 10.186889 59.745100 10.186896 59.745099 10.186905 59.745100 10.186914 59.745104 10.186920 59.745108 10.186922</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Øver Sund bru</app:navn>
+      <app:kulturminneId>124799-1</app:kulturminneId>
+      <app:antallEnkeltminner>1</app:antallEnkeltminner>
+      <app:synlig>false</app:synlig>
+      <app:lokalitetskategori>L-ARK</app:lokalitetskategori>
+      <app:lokalitetsart>20183</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:opprinneligFunksjon>2000</app:opprinneligFunksjon>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernelov>KML</app:vernelov>
+          <app:vernetype>FJE</app:vernetype>
+          <app:vernedato>2007-12-01</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=124799-1</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/124799</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.24625">
+      <app:datafangstdato>2007-12-01T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>124806-1</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2024-01-06T13:37:05</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2009-02-17T11:06:46</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T22:52:36.178</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>82</app:målemetode>
+          <app:nøyaktighet>5000</app:nøyaktighet>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Stokker fra bolverk.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.24625_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.24625_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.745015 10.188290 59.745019 10.188287 59.745022 10.188280 59.745023 10.188271 59.745021 10.188262 59.745018 10.188256 59.745013 10.188254 59.745009 10.188257 59.745006 10.188264 59.745005 10.188273 59.745007 10.188282 59.745010 10.188288 59.745015 10.188290</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Øvre Sund bru</app:navn>
+      <app:kulturminneId>124806-1</app:kulturminneId>
+      <app:antallEnkeltminner>1</app:antallEnkeltminner>
+      <app:synlig>false</app:synlig>
+      <app:lokalitetskategori>L-ARK</app:lokalitetskategori>
+      <app:lokalitetsart>20140</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:opprinneligFunksjon>2000</app:opprinneligFunksjon>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernetype>UAV</app:vernetype>
+          <app:vernedato>1900-01-01</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=124806-1</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/124806</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+  <wfs:member>
+    <app:Lokalitet xmlns:app="http://skjema.geonorge.no/SOSI/produktspesifikasjon/LokaliteterEnkeltminnerOgSikringssoner/20210217" gml:id="lokalitet.77625">
+      <app:datafangstdato>2014-05-06T00:00:00</app:datafangstdato>
+      <app:identifikasjon>
+        <app:Identifikasjon>
+          <app:lokalId>176637-1</app:lokalId>
+          <app:navnerom>https://data.geonorge.no/sosi/kulturminner/lokaliteter_enkeltminner_sikringssoner</app:navnerom>
+          <app:versjonId>20210217</app:versjonId>
+        </app:Identifikasjon>
+      </app:identifikasjon>
+      <app:oppdateringsdato>2025-06-24T11:43:56</app:oppdateringsdato>
+      <app:førsteDigitaliseringsdato>2014-05-06T10:59:28</app:førsteDigitaliseringsdato>
+      <app:datauttaksdato>2026-06-09T22:59:18.586</app:datauttaksdato>
+      <app:kvalitet>
+        <app:Posisjonskvalitet>
+          <app:målemetode>82</app:målemetode>
+          <app:nøyaktighet>200</app:nøyaktighet>
+        </app:Posisjonskvalitet>
+      </app:kvalitet>
+      <app:informasjon>Dette er objekt nr 223 i Statens vegvesens landsverneplan. &#xd;Brua inngår i Sundhauggata, et av de eldste gateløpene ned til Sundstedet. Den går i dag over en jernbaneskjæring. Det er stabbesteiner på den ene siden. Brua ligger i et miljø med Strømsgodset kirke med smijernsgjerde på den ene siden og en banevokterbu ved Randsfjordbanen på den andre siden. Brua ligger i det kommunale gatenettet.&#xd;SVV NVP= Statens vegvesens landsverneplan: «Vegvalg – Nasjonal verneplan for veger, bruer og vegrelaterte kulturminner». For spørsmål vedrørende objektene eller endringer av informasjonen om disse i Askeladden, vennligst kontakt Vegdirektoratet ved Miljøseksjonen eller Norsk Vegmuseum.</app:informasjon>
+      <app:opphav>Buskerud fylkeskommune</app:opphav>
+      <app:område>
+        <!--Inlined geometry 'lokalitet.77625_APP_OMRÅDE'-->
+        <gml:Polygon gml:id="lokalitet.77625_APP_OMRÅDE" srsName="urn:ogc:def:crs:EPSG::4326">
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>59.742388 10.186591 59.742398 10.186444 59.742051 10.186353 59.742043 10.186509 59.742388 10.186591</gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </app:område>
+      <app:navn>Sundhaugen bru - Brunr 06-1790 - 223 SVV NVP</app:navn>
+      <app:kulturminneId>176637-1</app:kulturminneId>
+      <app:antallEnkeltminner>1</app:antallEnkeltminner>
+      <app:synlig>false</app:synlig>
+      <app:lokalitetskategori>L-BVF</app:lokalitetskategori>
+      <app:lokalitetsart>20257</app:lokalitetsart>
+      <app:kommune>3301</app:kommune>
+      <app:opprinneligFunksjon>2000</app:opprinneligFunksjon>
+      <app:høyesteVern>
+        <app:Vern>
+          <app:vernetype>STAT</app:vernetype>
+          <app:vernedato>2015-10-27</app:vernedato>
+        </app:Vern>
+      </app:høyesteVern>
+      <app:linkAskeladden>https://askeladden.ra.no/askeladden/?kid=176637-1</app:linkAskeladden>
+      <app:linkKulturminnesøk>https://kulturminnesok.no/ra/lokalitet/176637</app:linkKulturminnesøk>
+    </app:Lokalitet>
+  </wfs:member>
+</wfs:FeatureCollection>

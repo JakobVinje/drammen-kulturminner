@@ -1,0 +1,435 @@
+{
+  "_note": "Converted from Geonorge WFS (wfs.geonorge.no/skwms1/wfs.kulturminner) app:Lokalitet feature type. Structured in ArcGIS-compatible JSON (features[].attributes + features[].geometry) for lib/heritage.js. ArcGIS REST equivalent does not exist as a public unauthenticated service — see docs/superpowers/notes/api-contracts.md. Original WFS source query: BBOX=10.18,59.72,10.24,59.76,EPSG:4326 (central Drammen area). Returned 5 features.",
+  "_sourceService": "https://wfs.geonorge.no/skwms1/wfs.kulturminner",
+  "_featureType": "app:Lokalitet",
+  "_wfsQuery": "SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&typeNames=app:Lokalitet&count=5&BBOX=10.18,59.72,10.24,59.76,EPSG:4326",
+  "features": [
+    {
+      "attributes": {
+        "OBJECTID": "151932",
+        "LOKALITETID": "276126-0",
+        "INFORMASJON": "Telefonkiosk, inngår i vernevatale mellom Riksantikvaren og Telenor",
+        "KOMMUNE": "3301",
+        "ANTALL_ENKELTMINNER": "1",
+        "LOKALITETSKATEGORI": "L-BVF",
+        "LOKALITETSART": "20117",
+        "OPPRINNELIG_FUNKSJON": "2000",
+        "SYNLIG": "true",
+        "OPPHAV": "Buskerud fylkeskommune",
+        "OPPDATERINGSDATO": "2024-01-06T13:37:05",
+        "DATAFANGSTDATO": "2021-03-01T00:00:00",
+        "VERNETYPE": "STAT",
+        "VERNEDATO": "2007-06-19",
+        "LINK_ASKELADDEN": "https://askeladden.ra.no/askeladden/?kid=276126-0",
+        "LINK_KULTURMINNESOK": "https://kulturminnesok.no/ra/lokalitet/276126",
+        "LOKAL_ID": "276126-0"
+      },
+      "geometry": {
+        "rings": [
+          [
+            [
+              10.204988,
+              59.729838
+            ],
+            [
+              10.205,
+              59.729821
+            ],
+            [
+              10.205034,
+              59.729827
+            ],
+            [
+              10.205022,
+              59.729844
+            ],
+            [
+              10.204988,
+              59.729838
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": "208148",
+        "LOKALITETID": "327939",
+        "INFORMASJON": "Fyll ut senere",
+        "KOMMUNE": "3301",
+        "ANTALL_ENKELTMINNER": "2",
+        "LOKALITETSKATEGORI": "L-BVF",
+        "LOKALITETSART": "20118",
+        "OPPRINNELIG_FUNKSJON": null,
+        "SYNLIG": "true",
+        "OPPHAV": "Buskerud fylkeskommune",
+        "OPPDATERINGSDATO": "2025-06-24T11:43:56",
+        "DATAFANGSTDATO": "2025-02-12T00:00:00",
+        "VERNETYPE": "FPG",
+        "VERNEDATO": "2025-02-12",
+        "LINK_ASKELADDEN": "https://askeladden.ra.no/askeladden/?kid=327939",
+        "LINK_KULTURMINNESOK": "https://kulturminnesok.no/ra/lokalitet/327939",
+        "LOKAL_ID": "327939"
+      },
+      "geometry": {
+        "rings": [
+          [
+            [
+              10.21989,
+              59.732248
+            ],
+            [
+              10.220289,
+              59.732448
+            ],
+            [
+              10.219869,
+              59.732674
+            ],
+            [
+              10.219716,
+              59.7326
+            ],
+            [
+              10.219588,
+              59.732666
+            ],
+            [
+              10.219587,
+              59.732666
+            ],
+            [
+              10.219587,
+              59.732666
+            ],
+            [
+              10.219522,
+              59.7327
+            ],
+            [
+              10.219414,
+              59.732754
+            ],
+            [
+              10.219158,
+              59.732631
+            ],
+            [
+              10.219166,
+              59.732626
+            ],
+            [
+              10.21989,
+              59.732248
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": "231158",
+        "LOKALITETID": "41474-1",
+        "INFORMASJON": "1. Gravrøys. Dårlig markert mot Ø. Den består av mindre stein, med et tynt torvlag over. I SV står et bjørketre. D 8m, h 0,7m.   3m S for denne ligger nok en gravrøys.",
+        "KOMMUNE": "3312",
+        "ANTALL_ENKELTMINNER": "1",
+        "LOKALITETSKATEGORI": "L-ARK",
+        "LOKALITETSART": "20164",
+        "OPPRINNELIG_FUNKSJON": "1700",
+        "SYNLIG": "true",
+        "OPPHAV": "Buskerud fylkeskommune",
+        "OPPDATERINGSDATO": "2025-06-24T11:43:56",
+        "DATAFANGSTDATO": "1964-06-18T00:00:00",
+        "VERNETYPE": "AUT",
+        "VERNEDATO": "1964-06-18",
+        "LINK_ASKELADDEN": "https://askeladden.ra.no/askeladden/?kid=41474-1",
+        "LINK_KULTURMINNESOK": "https://kulturminnesok.no/ra/lokalitet/41474",
+        "LOKAL_ID": "41474-1"
+      },
+      "geometry": {
+        "rings": [
+          [
+            [
+              10.223565,
+              59.759584
+            ],
+            [
+              10.223548,
+              59.759578
+            ],
+            [
+              10.223533,
+              59.759569
+            ],
+            [
+              10.223526,
+              59.759562
+            ],
+            [
+              10.223522,
+              59.759552
+            ],
+            [
+              10.223517,
+              59.759535
+            ],
+            [
+              10.223519,
+              59.759523
+            ],
+            [
+              10.223529,
+              59.759511
+            ],
+            [
+              10.223556,
+              59.759499
+            ],
+            [
+              10.223585,
+              59.759495
+            ],
+            [
+              10.223599,
+              59.759495
+            ],
+            [
+              10.223623,
+              59.759501
+            ],
+            [
+              10.223645,
+              59.759514
+            ],
+            [
+              10.223656,
+              59.759524
+            ],
+            [
+              10.22367,
+              59.759539
+            ],
+            [
+              10.223675,
+              59.759555
+            ],
+            [
+              10.223669,
+              59.759568
+            ],
+            [
+              10.223663,
+              59.759577
+            ],
+            [
+              10.223654,
+              59.759584
+            ],
+            [
+              10.223641,
+              59.75959
+            ],
+            [
+              10.223628,
+              59.759593
+            ],
+            [
+              10.223607,
+              59.759593
+            ],
+            [
+              10.223589,
+              59.759592
+            ],
+            [
+              10.223576,
+              59.759587
+            ],
+            [
+              10.223565,
+              59.759584
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": "254852",
+        "LOKALITETID": "65193-1",
+        "INFORMASJON": "I blomsterbed bak huset fant eieren , Stein Johnsen, på tomten en bearbeidet artefakt av sandstein. Artefakten er trapesformet med skarpslipt buet egg i den brede enden og tilspisset stikkende i motsatt ende (11,5 cm lang og maks 5,3 cm bred). Redskapet er velegnet som skraper. \n\nFunnet gir en god indikasjon om at det på stedet var en fangstplass i eldre steinalder. Terrenget danner et platå på en odde ovenfor en liten nordsørgående vik.  \n   \n",
+        "KOMMUNE": "3301",
+        "ANTALL_ENKELTMINNER": "1",
+        "LOKALITETSKATEGORI": "L-ARK",
+        "LOKALITETSART": "20183",
+        "OPPRINNELIG_FUNKSJON": "9900",
+        "SYNLIG": "true",
+        "OPPHAV": "Buskerud fylkeskommune",
+        "OPPDATERINGSDATO": "2025-06-24T11:43:56",
+        "DATAFANGSTDATO": "2002-12-25T00:00:00",
+        "VERNETYPE": "UAV",
+        "VERNEDATO": "1900-01-01",
+        "LINK_ASKELADDEN": "https://askeladden.ra.no/askeladden/?kid=65193-1",
+        "LINK_KULTURMINNESOK": "https://kulturminnesok.no/ra/lokalitet/65193",
+        "LOKAL_ID": "65193-1"
+      },
+      "geometry": {
+        "rings": [
+          [
+            [
+              10.183126,
+              59.734166
+            ],
+            [
+              10.183125,
+              59.734168
+            ],
+            [
+              10.183121,
+              59.734169
+            ],
+            [
+              10.183117,
+              59.73417
+            ],
+            [
+              10.183112,
+              59.734169
+            ],
+            [
+              10.183109,
+              59.734167
+            ],
+            [
+              10.183109,
+              59.734165
+            ],
+            [
+              10.18311,
+              59.734163
+            ],
+            [
+              10.183114,
+              59.734161
+            ],
+            [
+              10.183118,
+              59.734161
+            ],
+            [
+              10.183122,
+              59.734162
+            ],
+            [
+              10.183125,
+              59.734163
+            ],
+            [
+              10.183126,
+              59.734166
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "attributes": {
+        "OBJECTID": "272695",
+        "LOKALITETID": "84987-1",
+        "INFORMASJON": null,
+        "KOMMUNE": "3301",
+        "ANTALL_ENKELTMINNER": "1",
+        "LOKALITETSKATEGORI": "L-KRK",
+        "LOKALITETSART": "20103",
+        "OPPRINNELIG_FUNKSJON": "2700",
+        "SYNLIG": "true",
+        "OPPHAV": "Riksantikvaren, Hovedkontor",
+        "OPPDATERINGSDATO": "2024-01-06T10:34:57",
+        "DATAFANGSTDATO": "1995-09-27T00:00:00",
+        "VERNETYPE": "LIST",
+        "VERNEDATO": "2000-11-21",
+        "LINK_ASKELADDEN": "https://askeladden.ra.no/askeladden/?kid=84987-1",
+        "LINK_KULTURMINNESOK": "https://kulturminnesok.no/ra/lokalitet/84987",
+        "LOKAL_ID": "84987-1"
+      },
+      "geometry": {
+        "rings": [
+          [
+            [
+              10.186705,
+              59.742564
+            ],
+            [
+              10.186612,
+              59.742562
+            ],
+            [
+              10.186617,
+              59.742508
+            ],
+            [
+              10.186712,
+              59.74251
+            ],
+            [
+              10.186715,
+              59.74248
+            ],
+            [
+              10.186991,
+              59.742488
+            ],
+            [
+              10.186991,
+              59.742483
+            ],
+            [
+              10.187064,
+              59.742485
+            ],
+            [
+              10.187062,
+              59.742501
+            ],
+            [
+              10.187071,
+              59.742501
+            ],
+            [
+              10.187066,
+              59.742546
+            ],
+            [
+              10.18706,
+              59.742592
+            ],
+            [
+              10.187031,
+              59.742591
+            ],
+            [
+              10.18703,
+              59.742606
+            ],
+            [
+              10.186977,
+              59.742605
+            ],
+            [
+              10.186978,
+              59.742602
+            ],
+            [
+              10.186702,
+              59.742594
+            ],
+            [
+              10.186705,
+              59.742564
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,282 @@
+{
+  "responseHeader": {
+    "zkConnected": true,
+    "status": 0,
+    "QTime": 115,
+    "params": {
+      "q": "Drammen Bragernes",
+      "api.key": "demo",
+      "df": "_text_",
+      "qt": "standard",
+      "fl": "identifier.id,identifier.owner,artifact.uniqueId,artifact.uuid,artifact.type,artifact.subtype,artifact.coordinate,artifact.authority,artifact.pictureCount,artifact.hasPictures,artifact.childCount,artifact.hasChildren,artifact.defaultPictureIndex,artifact.defaultMediaIdentifier,artifact.defaultPictureDimension,artifact.publishedDate,artifact.updatedDate,artifact.ingress.title,artifact.ingress.producer,artifact.ingress.producerRole,artifact.ingress.additionalProducers,artifact.ingress.production.fromYear,artifact.ingress.production.toYear,artifact.ingress.production.place,artifact.ingress.classification,artifact.ingress.subjects,artifact.ingress.names,artifact.ingress.description,artifact.ingress.license",
+      "q.op": "AND",
+      "fq": [
+        "{!join from=identifier to=identifier.owner fromIndex=owners}dimu_instances:(\"dimu-se prod\" OR \"dimu-no prod\" OR \"oslobilder prod\" OR \"dimu-kulturnav\")",
+        "artifact.type:Photograph"
+      ],
+      "rows": "10",
+      "wt": "json"
+    }
+  },
+  "response": {
+    "numFound": 214,
+    "start": 0,
+    "docs": [
+      {
+        "identifier.id": "NF.10028-025",
+        "identifier.owner": "NF",
+        "artifact.uuid": "f3f9874d-2ed3-4b65-b148-36362e9fb1c8",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "011013417696",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Stereoskopi. Interiør i Bragernes kirke, Drammen, Buskerud.",
+        "artifact.ingress.producer": "Ukjent",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.updatedDate": "2026-04-14T07:31:20.769Z",
+        "artifact.publishedDate": "2014-04-10T04:42:41.543Z",
+        "artifact.ingress.classification": [
+          "215",
+          "346",
+          "352",
+          "353"
+        ],
+        "artifact.ingress.subjects": [
+          "Interiør",
+          "Kirker",
+          "Stereofotografier"
+        ],
+        "artifact.ingress.license": [
+          "CC pdm"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "012s7YYr84ea",
+        "artifact.defaultPictureIndex": 425416,
+        "artifact.defaultPictureDimension": "5582x2735",
+        "artifact.ingress.production.place": "Norge, Buskerud, Drammen, Bragernes Norge, Buskerud, Drammen, Bragernes"
+      },
+      {
+        "identifier.id": "DFK.2011-0024",
+        "identifier.owner": "DMU",
+        "artifact.uuid": "d49c3b1e-42e2-4baa-9ee9-5e82da0a2125",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "0210113210064",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Drammen børs, Forsikringsselskapet Norge, Bragernes torg, flagg med hakekors, 2. verdenskrig, aviskiosk, bryggekant",
+        "artifact.ingress.producer": "Ukjent fotograf,",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.ingress.production.fromYear": 1940,
+        "artifact.ingress.production.toYear": 1945,
+        "artifact.updatedDate": "2026-02-10T17:46:26.914Z",
+        "artifact.publishedDate": "2023-01-17T08:59:51.734Z",
+        "artifact.ingress.subjects": [
+          "Krig->2. verdenskrig"
+        ],
+        "artifact.ingress.license": [
+          "CC by-nc-sa"
+        ],
+        "artifact.coordinate": "59.74293070000000000000, 10.20450000000005200000",
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "019EBwErrfPrg",
+        "artifact.defaultPictureIndex": 7003,
+        "artifact.defaultPictureDimension": "4000x2967",
+        "artifact.ingress.production.place": "Norge, Nedre Strandgate, Drammen, Buskerud, Nedre Strandgate, Bragernes Norge, Bragernes torg, Drammen, Buskerud Norge, Drammen børs, Drammen, Buskerud"
+      },
+      {
+        "identifier.id": "DFK.1988-0114",
+        "identifier.owner": "DMU",
+        "artifact.uuid": "c999d4ce-a5e9-4b0e-b032-8bd448dbadf3",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "0210113542903",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Bragernes torg, Drammen, Bragernes kirke, Capjongården, aviskiosk, bank, Bragernesåsen i bakgrunnen",
+        "artifact.ingress.producer": "Ukjent fotograf,",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.updatedDate": "2026-02-10T11:40:11.198Z",
+        "artifact.publishedDate": "2023-05-26T03:15:43.167Z",
+        "artifact.ingress.license": [
+          "CC by-nc-sa"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "019EE5ESbv2kG",
+        "artifact.defaultPictureIndex": 8441,
+        "artifact.defaultPictureDimension": "4000x2867",
+        "artifact.ingress.production.place": "Norge, Bragernesåsen, Drammen, Buskerud Norge, Bragernes torg, Drammen, Buskerud"
+      },
+      {
+        "identifier.id": "A-70036/Ub/0005/114",
+        "identifier.owner": "BAR",
+        "artifact.uuid": "361f9b4f-d27f-462c-b4bd-8919b900972b",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "011012632387",
+        "artifact.hasChildren": false,
+        "artifact.ingress.producer": "Lyng, Per",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.updatedDate": "2019-03-17T07:38:24.326Z",
+        "artifact.publishedDate": "2014-03-13T20:35:51.591Z",
+        "artifact.ingress.subjects": [
+          "Buss"
+        ],
+        "artifact.ingress.license": [
+          "CC by-sa"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "02RzZCDx3r",
+        "artifact.defaultPictureIndex": 0,
+        "artifact.ingress.title": "Buss SH F-1686 på Bragernes torg i Drammen.",
+        "artifact.ingress.production.place": "Drammen, Bragernes torg"
+      },
+      {
+        "identifier.id": "DFK.2011-0016",
+        "identifier.owner": "DMU",
+        "artifact.uuid": "ff674fcd-2e5a-4759-bd65-d89eeeb54617",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "0210113210056",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Tyske soldater på Bragernes torg, Drammen. 2. verdenskrig. Hakekors. Bragernes kirke og Bragernesåsen skimtes i bakgrunnen",
+        "artifact.ingress.producer": "Ukjent fotograf,",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.ingress.production.fromYear": 1940,
+        "artifact.ingress.production.toYear": 1945,
+        "artifact.updatedDate": "2026-02-10T17:55:02.695Z",
+        "artifact.publishedDate": "2023-01-17T08:59:42.782Z",
+        "artifact.ingress.subjects": [
+          "Krig->2. verdenskrig"
+        ],
+        "artifact.ingress.license": [
+          "CC by-nc-sa"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "019EBwErrfPrY",
+        "artifact.defaultPictureIndex": 6995,
+        "artifact.defaultPictureDimension": "4000x2713",
+        "artifact.ingress.production.place": "Norge, Bragernes torg, Drammen, Buskerud"
+      },
+      {
+        "identifier.id": "DFK.1988-0100",
+        "identifier.owner": "DMU",
+        "artifact.uuid": "06d9c580-4798-4617-a6f2-282b8a9cc144",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "0210113542882",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Bragernes torg, Drammen. Bragernes kirke, Rådhuset, brannstasjonen. Bragernesåsen i bakgrunnen.",
+        "artifact.ingress.producer": "Christoffersen, Hans Christian",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.ingress.production.fromYear": 1925,
+        "artifact.ingress.production.toYear": 1935,
+        "artifact.updatedDate": "2026-02-10T17:56:57.172Z",
+        "artifact.publishedDate": "2023-05-26T03:15:20.574Z",
+        "artifact.ingress.license": [
+          "CC by-nc-sa"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "019EE5ESbv2bR",
+        "artifact.defaultPictureIndex": 8419,
+        "artifact.defaultPictureDimension": "4000x2686",
+        "artifact.ingress.production.place": "Norge, Bragernes torg, Drammen, Buskerud"
+      },
+      {
+        "identifier.id": "DFK.1988-0117",
+        "identifier.owner": "DMU",
+        "artifact.uuid": "505de161-9de7-45f5-a093-396d9edc5b5b",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "0210113542906",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Bragernes torg, Drammen. Markedboder, fotnene, skotøimagasin,",
+        "artifact.ingress.producer": "Christoffersen, Hans Christian",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.updatedDate": "2026-02-10T15:55:12.415Z",
+        "artifact.publishedDate": "2023-05-26T03:15:44.883Z",
+        "artifact.ingress.license": [
+          "CC by-nc-sa"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "019EE5ESbv2pZ",
+        "artifact.defaultPictureIndex": 8444,
+        "artifact.defaultPictureDimension": "4000x2443",
+        "artifact.ingress.production.place": "Norge, Bragernes torg, Drammen, Buskerud"
+      },
+      {
+        "identifier.id": "SS-SÅ-0996",
+        "identifier.owner": "MH",
+        "artifact.uuid": "02fd3e6a-78b0-4692-9a42-961438fd488b",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "0210113330688",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Gatebilde med trehusbebyggelse i Drammen. Bragernes kirke i bakgrunnen. Kolonial og reklameskilt, syklist og bil. Fem mennesker på fortauet.",
+        "artifact.ingress.producer": "Aas, Leif",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.ingress.production.fromYear": 1945,
+        "artifact.ingress.production.toYear": 1958,
+        "artifact.updatedDate": "2024-11-29T11:11:44.067Z",
+        "artifact.publishedDate": "2023-03-24T03:28:47.157Z",
+        "artifact.ingress.license": [
+          "CC by-nc"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "019EBwkCJnVCJ",
+        "artifact.defaultPictureIndex": 224571,
+        "artifact.defaultPictureDimension": "6120x6209",
+        "artifact.ingress.production.place": "Drammen, Bragernes"
+      },
+      {
+        "identifier.id": "SS-TIT-26052025-232",
+        "identifier.owner": "MH",
+        "artifact.uuid": "e3ace980-45e2-4f4f-8462-521f98cde0bc",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "0210116470658",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Lite barn, Dorothea Vogt i september 1910. Hun var datter av Wenche Elisabeth og Ludvig Adler Lie Vogt, som var bosatt på Bragernes i Drammen",
+        "artifact.ingress.producer": "Ukjent",
+        "artifact.ingress.producerRole": "Fotograf",
+        "artifact.ingress.production.fromYear": 1910,
+        "artifact.ingress.production.toYear": 1910,
+        "artifact.updatedDate": "2026-04-29T07:39:23.760Z",
+        "artifact.publishedDate": "2026-02-07T03:18:32.906Z",
+        "artifact.ingress.license": [
+          "CC by-nc"
+        ],
+        "artifact.pictureCount": 1,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "069ELhAMq58g3",
+        "artifact.defaultPictureIndex": 256496,
+        "artifact.defaultPictureDimension": "4970x7000",
+        "artifact.ingress.production.place": "Norge, Buskerud, Drammen, Bragernes, Bergstien 69"
+      },
+      {
+        "identifier.id": "PMF.Stempel-0504",
+        "identifier.owner": "MH-P",
+        "artifact.uuid": "22e2c663-d93f-462b-80f0-a7828fef4226",
+        "artifact.type": "Photograph",
+        "artifact.uniqueId": "011011742671",
+        "artifact.hasChildren": false,
+        "artifact.ingress.title": "Stempelkatalog, Bragernes, Drammen, Buskerud",
+        "artifact.updatedDate": "2025-11-13T10:41:35.778Z",
+        "artifact.publishedDate": "2010-12-05T23:00:00Z",
+        "artifact.ingress.classification": [
+          "202",
+          "205",
+          "523"
+        ],
+        "artifact.ingress.subjects": [
+          "Poststempel"
+        ],
+        "artifact.ingress.license": [
+          "AC 1"
+        ],
+        "artifact.pictureCount": 3,
+        "artifact.hasPictures": true,
+        "artifact.defaultMediaIdentifier": "047LoehoW",
+        "artifact.defaultPictureIndex": 99796,
+        "artifact.defaultPictureDimension": "2218x1423"
+      }
+    ]
+  }
+}

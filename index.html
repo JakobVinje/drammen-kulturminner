@@ -129,6 +129,8 @@ for(const r of DATA){ if(!r.ll) continue;
   m.bindPopup(popup(r));
   m.on('popupopen',e=>{const b=e.popup.getElement().querySelector('[data-det]'); if(b) b.onclick=()=>openDetail(r);});
   markers.push({rec:r,m}); }
+const IDX=new Map(); DATA.forEach((r,i)=>IDX.set(r,i));
+const objId=r=>IDX.get(r);
 function popup(r){
   const row=(k,v)=>v?'<tr><td class="k">'+k+'</td><td>'+v+'</td></tr>':'';
   const bn1=(r.bn||'').match(/\d+/);
@@ -289,6 +291,7 @@ function updateHash(){ if(restoring) return;
   const p=new URLSearchParams();
   p.set('dim',dim); p.set('y0',y0); p.set('y1',y1); if(hideUnd)p.set('u','1'); if(!useCluster)p.set('c','0'); if(onlyPhoto)p.set('p','1'); if(q)p.set('q',q);
   if(hidden.size)p.set('h',JSON.stringify([...hidden]));
+  if(currentDetail!=null && objId(currentDetail)!=null) p.set('obj',objId(currentDetail));
   history.replaceState(null,'','#'+p.toString());
 }
 function restoreHash(){
@@ -303,6 +306,8 @@ function restoreHash(){
     if(p.get('p')){onlyPhoto=true;$('onlyphoto').checked=true;}
     if(p.get('q')){q=p.get('q');$('search').value=q;}
     if(p.get('h')){try{JSON.parse(p.get('h')).forEach(k=>hidden.add(k));}catch(e){}}
+    if(p.get('obj')!=null){const oi=+p.get('obj'); const rr=DATA[oi];
+      if(rr){ setTimeout(()=>{ openDetail(rr); if(rr.ll) map.setView(rr.ll, Math.max(map.getZoom(),16)); },0); }}
   }catch(e){}
   restoring=false;
 }

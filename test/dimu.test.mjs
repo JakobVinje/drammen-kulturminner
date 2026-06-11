@@ -39,7 +39,7 @@ test('imageUrl: builds dms01 delivery URL with dimension', () => {
 
 test('countHits: reads hit count from fixture', () => {
   assert.equal(typeof countHits(fixture), 'number');
-  assert.ok(countHits(fixture) >= 1);
+  assert.equal(countHits(fixture), 214); // pinned to the captured fixture's numFound
 });
 
 test('trimPhotos: maps fixture docs to minimal gallery items', () => {

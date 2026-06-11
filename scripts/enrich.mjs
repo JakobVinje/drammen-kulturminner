@@ -16,8 +16,14 @@ const RETRIES = 3;
 
 const limitArg = process.argv.indexOf('--limit');
 const LIMIT = limitArg !== -1 ? Number(process.argv[limitArg + 1]) : Infinity;
+if (limitArg !== -1 && !Number.isFinite(LIMIT)) {
+  throw new Error(`--limit requires a positive integer, got: ${process.argv[limitArg + 1]}`);
+}
 
 // Stable id for cache keying: prefer gnr/bnr, else address+betegnelse.
+// NOTE: this is PARCEL-level (eiendom), not building-level — multiple records can
+// share one gnr/bnr. Such siblings inherit the first record's result (same parcel →
+// same coordinate → same heritage match; the photo query reuses the first address).
 function recId(r) {
   return r.g && r.bn ? `MAT|${r.g}|${r.bn}` : `ADR|${r.ad}|${r.be}`;
 }

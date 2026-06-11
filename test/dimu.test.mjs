@@ -14,6 +14,14 @@ test('buildQuery: falls back to betegnelse when no address', () => {
   assert.equal(buildQuery({ ad: '', be: 'Bragernes kai' }), 'Drammen Bragernes kai');
 });
 
+test('buildQuery: returns empty string when no address and no betegnelse (empty object)', () => {
+  assert.equal(buildQuery({}), '');
+});
+
+test('buildQuery: returns empty string when both ad and be are empty strings', () => {
+  assert.equal(buildQuery({ ad: '', be: '' }), '');
+});
+
 test('searchUrl: includes key, paging, image filter', () => {
   const u = searchUrl('Drammen Engene 16', 1, 'demo', 24);
   assert.match(u, /api\.key=demo/);

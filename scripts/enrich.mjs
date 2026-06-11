@@ -59,15 +59,20 @@ async function enrichOne(r, cache, report) {
 
   const result = {};
   // DigitaltMuseum: count-only -> hp + dq
+  // Skip entirely when buildQuery returns '' (no address/betegnelse) to avoid match-all queries.
   const dq = buildQuery(r);
-  try {
-    const json = await fetchJson(countUrl(dq, API_KEY));
-    const hits = countHits(json);
-    result.hp = hits > 0;
-    if (hits > 0) result.dq = dq;
-    report.push({ id, dq, dimuHits: hits });
-  } catch (e) {
-    report.push({ id, dq, dimuError: String(e) });
+  if (!dq) {
+    report.push({ id, dimuSkipped: true });
+  } else {
+    try {
+      const json = await fetchJson(countUrl(dq, API_KEY));
+      const hits = countHits(json);
+      result.hp = hits > 0;
+      if (hits > 0) result.dq = dq;
+      report.push({ id, dq, dimuHits: hits });
+    } catch (e) {
+      report.push({ id, dq, dimuError: String(e) });
+    }
   }
 
   // Kulturminnesøk: WFS BBOX -> parse GML -> nearest -> km/kc/kn/kv (only if coordinates exist)

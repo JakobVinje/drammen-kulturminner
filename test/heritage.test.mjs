@@ -39,3 +39,20 @@ test('trimLocality: produces baked-field object', () => {
   assert.ok('id' in loc && 'name' in loc && 'vernetype' in loc && 'link' in loc);
   assert.match(loc.link, /^https:\/\/kulturminnesok\.no\/ra\/lokalitet\//);
 });
+
+test('pickNearest: returns dist===0 for a point clearly inside the first feature polygon', () => {
+  const feats = parseLokaliteter(gml);
+  // First feature is Strømsgodset kirkested; its polygon coords (lat,lon pairs) are:
+  // [59.742564,10.186705], [59.742562,10.186612], [59.742508,10.186617], [59.742510,10.186712],
+  // [59.742480,10.186715], [59.742488,10.186991], [59.742483,10.186991], [59.742485,10.187064],
+  // [59.742501,10.187062], [59.742501,10.187071], [59.742546,10.187066], [59.742592,10.187060],
+  // [59.742591,10.187031], [59.742606,10.187030], [59.742605,10.186977], [59.742602,10.186978],
+  // [59.742594,10.186702], [59.742564,10.186705]
+  // The average of all vertices is inside this convex-ish polygon.
+  const interiorLat = 59.742538;
+  const interiorLon = 10.186884;
+  // Build a single-feature array so the target is always picked
+  const got = pickNearest([feats[0]], interiorLat, interiorLon);
+  assert.ok(got !== null, 'should return a match');
+  assert.strictEqual(got.dist, 0, 'dist should be 0 for a point inside the polygon');
+});

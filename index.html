@@ -110,6 +110,11 @@ const PAL=["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2"
 const MIcounts={}; for(const r of DATA){const k=r.mi||"(uten miljø)";MIcounts[k]=(MIcounts[k]||0)+1;}
 const MIorder=Object.keys(MIcounts).sort((a,b)=>MIcounts[b]-MIcounts[a]);
 const MIcol={}; MIorder.forEach((k,i)=>MIcol[k]= k==="(uten miljø)"?"#dddddd":PAL[i%PAL.length]);
+// ---- curated walking tours (hand-seeded; stop = DATA index) ----
+const TOURS=[
+ {id:"bragernes",title:"Bragernes sentrum",intro:"En rusletur i Bragernes' eldre bykjerne, fra elvefronten opp mot torget. Verneverdig trehus- og murbebyggelse.",stops:[256,253,254,255,257,258,259,249]},
+ {id:"stromso",title:"Strømsø rundt",intro:"Strømsø-siden av Drammen: kirkested, gateløp og bygårder fra 1800-tallet.",stops:[897,898,899,900,901,902,903,904]}
+];
 function dimConf(d){
   if(d==="v")  return {get:r=>r.v, order:["S","H","M","L"], color:k=>(VERDI[k]||{}).c||"#999", label:k=>(VERDI[k]||{}).l||k};
   if(d==="kat")return {get:r=>r.kat, order:Object.keys(KAT), color:k=>KAT[k]||"#999", label:k=>k};

@@ -1,0 +1,1 @@
+{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"summary":{"distance":1234.5,"duration":890.1}},"geometry":{"type":"LineString","coordinates":[[10.2049,59.7458],[10.2055,59.7461],[10.2061,59.7466]]}}],"metadata":{"query":{"profile":"foot-walking"}}}

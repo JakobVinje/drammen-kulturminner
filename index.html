@@ -70,6 +70,7 @@
  .tourstep{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;font-size:13px}
  .tourstep button{font-size:13px;padding:6px 12px;border:1px solid #ccc;background:#fff;border-radius:6px;cursor:pointer}
  .tourstep button:disabled{opacity:.4;cursor:default}
+ .omtekst{font-size:13px;color:#333;line-height:1.45;margin:2px 0}
 </style></head><body>
 <div id="map"></div>
 <div id="panel">
@@ -143,7 +144,9 @@ function buildAutoTours(){const groups=new Map();
     const ord=nnOrder(items).slice(0,20);
     out.push({id:"mi:"+mi,title:mi,intro:"Kulturmiljø «"+mi+"» — "+ord.length+" stopp.",stops:ord.map(o=>o.idx)});}
   out.sort((a,b)=>a.title.localeCompare(b.title,'no'));return out;}
-function resolveStops(t){const out=[];for(const i of (t.stops||[])){const r=DATA[i];if(r&&Array.isArray(r.ll))out.push(r);}return out;}
+function resolveStops(t){const recs=[],notes=[];for(const s of (t.stops||[])){const idx=(s&&typeof s==='object')?s.i:s;const note=(s&&typeof s==='object')?(s.note||null):null;const r=DATA[idx];if(r&&Array.isArray(r.ll)){recs.push(r);notes.push(note);}}return{recs,notes};}
+const STYLE_SKIP=new Set(['','Uoppgitt','Ubestemt']);
+function summarize(r){if(!r)return '';const base=((r.f||r.kat||'')+'').trim();let s=base?base.charAt(0).toUpperCase()+base.slice(1):'';const stil=((r.sn||'')+'').trim();if(s&&stil&&!STYLE_SKIP.has(stil))s+=' i '+stil.toLowerCase();const yr=((r.ar||'')+'').trim()||(r.y!=null?String(r.y):'');if(s&&yr)s+=', oppført '+yr;if(s)s+='.';const vlab=(VERDI[r.v]||{}).l;if(vlab)s+=(s?' ':'')+vlab+'.';if(r.fr)s+=(s?' ':'')+'Fredet.';return s.trim();}
 const AUTO_TOURS=buildAutoTours();
 function findTour(id){return TOURS.concat(AUTO_TOURS).find(t=>t.id===id)||null;}
 function dimConf(d){
@@ -181,10 +184,10 @@ for(const r of DATA){ if(!r.ll) continue;
 const IDX=new Map(); DATA.forEach((r,i)=>IDX.set(r,i));
 const objId=r=>IDX.get(r);
 // ---- tour state ----
-let activeTour=null, tourStops=[], tourIdx=0;
+let activeTour=null, tourStops=[], tourIdx=0, tourNotes=[];
 const tourLayer=L.layerGroup(), routeLayer=L.layerGroup();
 function enterTour(t){
-  activeTour=t; tourStops=resolveStops(t); tourIdx=0;
+  activeTour=t; const _rs=resolveStops(t); tourStops=_rs.recs; tourNotes=_rs.notes; tourIdx=0;
   if(map.hasLayer(cluster))map.removeLayer(cluster); if(map.hasLayer(plain))map.removeLayer(plain);
   tourLayer.clearLayers(); routeLayer.clearLayers(); map.addLayer(routeLayer); map.addLayer(tourLayer);
   tourStops.forEach((r,i)=>{const icon=L.divIcon({className:'tourpin',html:'<span>'+(i+1)+'</span>',iconSize:[26,26],iconAnchor:[13,13]});
@@ -267,8 +270,10 @@ function openDetail(r){
   currentDetail=r;
   const inTour=activeTour&&tourStops[tourIdx]===r;
   const stepper=inTour?'<div class="tourstep"><button id="tprev">‹ Forrige</button><span>'+(tourIdx+1)+' / '+tourStops.length+'</span><button id="tnext">Neste ›</button></div>':'';
+  const note=inTour?tourNotes[tourIdx]:null; const desc=note||summarize(r);
   $('detbody').innerHTML=stepper+'<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
     +'<p class="detsub">'+esc(r.ad||'')+'</p>'
+    +(desc?'<div class="detsec"><h3>Om stedet</h3><div class="omtekst">'+esc(desc)+'</div></div>':'')
     +'<div class="detsec"><h3>Foto</h3><div id="detphotos">—</div></div>'
     +heritageSection(r)
     +'<div class="detsec"><h3>Detaljer</h3>'+detailFields(r)+'</div>';

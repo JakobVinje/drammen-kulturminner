@@ -208,7 +208,25 @@ function renderTourBox(){
 function highlightStop(){const ol=$('tourlist'); if(ol)[...ol.children].forEach((li,i)=>li.classList.toggle('active',i===tourIdx));}
 function stepTo(i){ if(i<0||i>=tourStops.length)return; tourIdx=i; const r=tourStops[i];
   map.flyTo(r.ll, Math.max(map.getZoom(),16)); openDetail(r); highlightStop(); updateHash(); }
-function drawRoute(){ routeLayer.clearLayers(); } // real impl in Task 3
+function estimateMeta(lls){let m=0;for(let i=1;i<lls.length;i++)m+=tourHav(lls[i-1],lls[i]);return {distance:m,duration:m/1.4};}
+function setTourMeta(meta,approx){const el=$('tourmeta'); if(!el)return;
+  const km=meta.distance/1000, min=Math.round(meta.duration/60);
+  el.textContent='~'+km.toFixed(km<10?1:0)+' km · ~'+min+' min'+(approx?' (omtrentlig rute)':'');}
+function drawRoute(){
+  routeLayer.clearLayers();
+  if(tourStops.length<2){ setTourMeta({distance:0,duration:0},false); return; }
+  const lls=tourStops.map(s=>s.ll);
+  routeLayer.addLayer(L.polyline(lls,{color:'#1f77b4',weight:3,dashArray:'6 6',opacity:.6})); // fallback first
+  setTourMeta(estimateMeta(lls),true);
+  const myTour=activeTour, coords=lls.map(p=>p[0]+','+p[1]).join(';');
+  fetch('/api/route?coords='+encodeURIComponent(coords))
+    .then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
+    .then(d=>{ if(activeTour!==myTour) return;            // tour switched mid-fetch; ignore stale
+      if(!d.line||!d.line.length) return;                 // keep fallback
+      routeLayer.clearLayers(); routeLayer.addLayer(L.polyline(d.line,{color:'#1f77b4',weight:4,opacity:.75}));
+      setTourMeta({distance:d.distance,duration:d.duration},false); })
+    .catch(()=>{}); // keep the straight-dashed fallback + estimated meta
+}
 function popup(r){
   const row=(k,v)=>v?'<tr><td class="k">'+k+'</td><td>'+v+'</td></tr>':'';
   const bn1=(r.bn||'').match(/\d+/);

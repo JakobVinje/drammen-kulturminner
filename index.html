@@ -37,6 +37,8 @@
    .btn{padding:8px 12px}
    .legrow{padding:7px 0}
    #paneltoggle{display:block}
+   .tourlist{max-height:150px}
+   .tourstep button{padding:9px 14px}
  }
  #paneltoggle{display:none;position:absolute;top:8px;right:10px;z-index:1100;border:1px solid #ccc;background:#fff;border-radius:6px;font-size:12px;padding:4px 8px;cursor:pointer}
  #detail{position:absolute;top:0;bottom:0;right:0;width:360px;max-width:90vw;background:#fff;border-left:1px solid #ddd;box-shadow:-4px 0 16px rgba(0,0,0,.08);overflow-y:auto;padding:16px 18px;box-sizing:border-box;z-index:1200;transition:transform .2s ease}
@@ -59,6 +61,15 @@
  #lightbox img{max-width:92vw;max-height:80vh;object-fit:contain;border-radius:4px}
  #lightbox .lbcap{color:#eee;font-size:12px;max-width:90vw;text-align:center}
  #lightbox .lbclose{position:absolute;top:14px;right:18px;color:#fff;background:none;border:none;font-size:30px;cursor:pointer}
+ .tourpin span{display:flex;align-items:center;justify-content:center;width:26px;height:26px;background:#1f77b4;color:#fff;border:2px solid #fff;border-radius:50%;font-size:12px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+ .tourintro{font-size:13px;color:#444;margin:8px 0;line-height:1.4}
+ .tourmeta{font-size:12px;color:#1f77b4;font-weight:600;margin-bottom:6px;min-height:14px}
+ .tourlist{margin:6px 0;padding-left:22px;font-size:13px;max-height:240px;overflow:auto}
+ .tourlist li{cursor:pointer;padding:3px 4px;border-radius:4px}
+ .tourlist li.active{background:#1f77b4;color:#fff}
+ .tourstep{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;font-size:13px}
+ .tourstep button{font-size:13px;padding:6px 12px;border:1px solid #ccc;background:#fff;border-radius:6px;cursor:pointer}
+ .tourstep button:disabled{opacity:.4;cursor:default}
 </style></head><body>
 <div id="map"></div>
 <div id="panel">
@@ -73,6 +84,9 @@
    <option value="vn">Vernestatus</option>
    <option value="mi">Kulturmiljø</option>
  </select>
+ <label class="fld">Vandretur</label>
+ <select id="tour"><option value="">— ingen tur —</option></select>
+ <div id="tourbox" class="hidden"></div>
  <label class="fld">Tidslinje (byggeår)</label>
  <div class="row yr"><input id="y0" type="number"/><span>–</span><input id="y1" type="number"/><button class="btn play" id="play">▶</button></div>
  <div class="row"><input id="slider" type="range"/></div>
@@ -115,6 +129,23 @@ const TOURS=[
  {id:"bragernes",title:"Bragernes sentrum",intro:"En rusletur i Bragernes' eldre bykjerne, fra elvefronten opp mot torget. Verneverdig trehus- og murbebyggelse.",stops:[256,253,254,255,257,258,259,249]},
  {id:"stromso",title:"Strømsø rundt",intro:"Strømsø-siden av Drammen: kirkested, gateløp og bygårder fra 1800-tallet.",stops:[897,898,899,900,901,902,903,904]}
 ];
+// ---- tour logic (mirrors lib/tours.js; inlined so it works on file:// too) ----
+function tourHav(a,b){const R=6371000,t=d=>d*Math.PI/180;const dLa=t(b[0]-a[0]),dLo=t(b[1]-a[1]);
+  const x=Math.sin(dLa/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function nnOrder(items){if(items.length<=1)return items.slice();const rem=items.slice();const out=[rem.shift()];
+  while(rem.length){const last=out[out.length-1].ll;let bi=0,bd=Infinity;
+    for(let i=0;i<rem.length;i++){const d=tourHav(last,rem[i].ll);if(d<bd){bd=d;bi=i;}}out.push(rem.splice(bi,1)[0]);}return out;}
+function buildAutoTours(){const groups=new Map();
+  DATA.forEach((r,idx)=>{const mi=r.mi;if(!mi||mi==="(uten miljø)"||!Array.isArray(r.ll))return;
+    if(!groups.has(mi))groups.set(mi,[]);groups.get(mi).push({idx,ll:r.ll});});
+  const out=[];for(const[mi,items]of groups){if(items.length<4)continue;
+    items.sort((a,b)=>a.ll[0]-b.ll[0]||a.ll[1]-b.ll[1]);
+    const ord=nnOrder(items).slice(0,20);
+    out.push({id:"mi:"+mi,title:mi,intro:"Kulturmiljø «"+mi+"» — "+ord.length+" stopp.",stops:ord.map(o=>o.idx)});}
+  out.sort((a,b)=>a.title.localeCompare(b.title,'no'));return out;}
+function resolveStops(t){const out=[];for(const i of (t.stops||[])){const r=DATA[i];if(r&&Array.isArray(r.ll))out.push(r);}return out;}
+const AUTO_TOURS=buildAutoTours();
+function findTour(id){return TOURS.concat(AUTO_TOURS).find(t=>t.id===id)||null;}
 function dimConf(d){
   if(d==="v")  return {get:r=>r.v, order:["S","H","M","L"], color:k=>(VERDI[k]||{}).c||"#999", label:k=>(VERDI[k]||{}).l||k};
   if(d==="kat")return {get:r=>r.kat, order:Object.keys(KAT), color:k=>KAT[k]||"#999", label:k=>k};
@@ -149,6 +180,55 @@ for(const r of DATA){ if(!r.ll) continue;
   markers.push({rec:r,m}); }
 const IDX=new Map(); DATA.forEach((r,i)=>IDX.set(r,i));
 const objId=r=>IDX.get(r);
+// ---- tour state ----
+let activeTour=null, tourStops=[], tourIdx=0;
+const tourLayer=L.layerGroup(), routeLayer=L.layerGroup();
+function enterTour(t){
+  activeTour=t; tourStops=resolveStops(t); tourIdx=0;
+  if(map.hasLayer(cluster))map.removeLayer(cluster); if(map.hasLayer(plain))map.removeLayer(plain);
+  tourLayer.clearLayers(); routeLayer.clearLayers(); map.addLayer(routeLayer); map.addLayer(tourLayer);
+  tourStops.forEach((r,i)=>{const icon=L.divIcon({className:'tourpin',html:'<span>'+(i+1)+'</span>',iconSize:[26,26],iconAnchor:[13,13]});
+    L.marker(r.ll,{icon}).on('click',()=>stepTo(i)).addTo(tourLayer);});
+  $('tour').value=t.id; renderTourBox(); drawRoute();
+  if(tourStops.length) map.fitBounds(L.latLngBounds(tourStops.map(s=>s.ll)).pad(0.2));
+  updateHash();
+}
+function exitTour(){
+  activeTour=null; tourStops=[]; tourLayer.clearLayers(); routeLayer.clearLayers();
+  if(map.hasLayer(tourLayer))map.removeLayer(tourLayer); if(map.hasLayer(routeLayer))map.removeLayer(routeLayer);
+  $('tour').value=''; const box=$('tourbox'); box.classList.add('hidden'); box.innerHTML='';
+  closeDetail(); render();
+}
+function renderTourBox(){
+  const box=$('tourbox'); box.classList.remove('hidden');
+  box.innerHTML='<div class="tourintro">'+esc(activeTour.intro)+'</div><div id="tourmeta" class="tourmeta"></div>'
+    +'<ol id="tourlist" class="tourlist"></ol><button class="btn" id="tourexit">Avslutt tur</button>';
+  const ol=$('tourlist');
+  tourStops.forEach((r,i)=>{const li=document.createElement('li');li.textContent=(r.be||r.f||r.ad||(r.g+'/'+r.bn));li.onclick=()=>stepTo(i);ol.appendChild(li);});
+  $('tourexit').onclick=exitTour; highlightStop();
+}
+function highlightStop(){const ol=$('tourlist'); if(ol)[...ol.children].forEach((li,i)=>li.classList.toggle('active',i===tourIdx));}
+function stepTo(i){ if(i<0||i>=tourStops.length)return; tourIdx=i; const r=tourStops[i];
+  map.flyTo(r.ll, Math.max(map.getZoom(),16)); openDetail(r); highlightStop(); updateHash(); }
+function estimateMeta(lls){let m=0;for(let i=1;i<lls.length;i++)m+=tourHav(lls[i-1],lls[i]);return {distance:m,duration:m/1.4};}
+function setTourMeta(meta,approx){const el=$('tourmeta'); if(!el)return;
+  const km=meta.distance/1000, min=Math.round(meta.duration/60);
+  el.textContent='~'+km.toFixed(km<10?1:0)+' km · ~'+min+' min'+(approx?' (omtrentlig rute)':'');}
+function drawRoute(){
+  routeLayer.clearLayers();
+  if(tourStops.length<2){ setTourMeta({distance:0,duration:0},false); return; }
+  const lls=tourStops.map(s=>s.ll);
+  routeLayer.addLayer(L.polyline(lls,{color:'#1f77b4',weight:3,dashArray:'6 6',opacity:.6})); // fallback first
+  setTourMeta(estimateMeta(lls),true);
+  const myTour=activeTour, coords=lls.map(p=>p[0]+','+p[1]).join(';');
+  fetch('/api/route?coords='+encodeURIComponent(coords))
+    .then(r=>{ if(!r.ok) throw new Error('http '+r.status); return r.json(); })
+    .then(d=>{ if(activeTour!==myTour) return;            // tour switched mid-fetch; ignore stale
+      if(!d.line||!d.line.length) return;                 // keep fallback
+      routeLayer.clearLayers(); routeLayer.addLayer(L.polyline(d.line,{color:'#1f77b4',weight:4,opacity:.75}));
+      setTourMeta({distance:d.distance,duration:d.duration},false); })
+    .catch(()=>{}); // keep the straight-dashed fallback + estimated meta
+}
 function popup(r){
   const row=(k,v)=>v?'<tr><td class="k">'+k+'</td><td>'+v+'</td></tr>':'';
   const bn1=(r.bn||'').match(/\d+/);
@@ -185,14 +265,17 @@ function detailFields(r){
 }
 function openDetail(r){
   currentDetail=r;
-  $('detbody').innerHTML='<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
+  const inTour=activeTour&&tourStops[tourIdx]===r;
+  const stepper=inTour?'<div class="tourstep"><button id="tprev">‹ Forrige</button><span>'+(tourIdx+1)+' / '+tourStops.length+'</span><button id="tnext">Neste ›</button></div>':'';
+  $('detbody').innerHTML=stepper+'<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
     +'<p class="detsub">'+esc(r.ad||'')+'</p>'
     +'<div class="detsec"><h3>Foto</h3><div id="detphotos">—</div></div>'
     +heritageSection(r)
     +'<div class="detsec"><h3>Detaljer</h3>'+detailFields(r)+'</div>';
   $('detail').classList.remove('hidden');
-  loadPhotos(r);
-  updateHash();
+  if(inTour){ $('tprev').onclick=()=>stepTo(tourIdx-1); $('tnext').onclick=()=>stepTo(tourIdx+1);
+    $('tprev').disabled=tourIdx===0; $('tnext').disabled=tourIdx===tourStops.length-1; }
+  loadPhotos(r); updateHash();
 }
 function closeDetail(){ currentDetail=null; $('detail').classList.add('hidden'); updateHash(); }
 let photoToken=0;
@@ -259,6 +342,7 @@ function updateChart(visRecs){
   chart.data.labels=decs.map(String); chart.data.datasets=datasets; chart.update('none');
 }
 function render(){
+  if(activeTour) return; // tour focus mode owns the map; exitTour() re-renders
   const C=dimConf(dim); cluster.clearLayers(); plain.clearLayers(); const vis=[],visRecs=[];
   for(const o of markers){ if(visible(o.rec)){ const hp=!!o.rec.hp;
       o.m.setStyle({fillColor:C.color(C.get(o.rec)), color:hp?'#0a7d28':'#222', weight:hp?2.5:.5});
@@ -289,6 +373,7 @@ $('slider').addEventListener('input',e=>{y1=+e.target.value;$('y1').value=y1;ren
 $('hideund').addEventListener('change',e=>{hideUnd=e.target.checked;render();});
 $('usecluster').addEventListener('change',e=>{useCluster=e.target.checked;render();});
 $('onlyphoto').addEventListener('change',e=>{onlyPhoto=e.target.checked;render();});
+$('tour').addEventListener('change',e=>{const t=findTour(e.target.value); if(t)enterTour(t); else exitTour();});
 $('paneltoggle').onclick=()=>{ $('panel').classList.toggle('collapsed'); $('map').classList.toggle('expanded');
   setTimeout(()=>map.invalidateSize(),210); };
 $('detclose').onclick=closeDetail;
@@ -311,7 +396,8 @@ function updateHash(){ if(restoring) return;
   const p=new URLSearchParams();
   p.set('dim',dim); p.set('y0',y0); p.set('y1',y1); if(hideUnd)p.set('u','1'); if(!useCluster)p.set('c','0'); if(onlyPhoto)p.set('p','1'); if(q)p.set('q',q);
   if(hidden.size)p.set('h',JSON.stringify([...hidden]));
-  if(currentDetail!=null && objId(currentDetail)!=null) p.set('obj',objId(currentDetail));
+  if(activeTour){ p.set('tour',activeTour.id); p.set('stop',tourIdx); }
+  else if(currentDetail!=null && objId(currentDetail)!=null) p.set('obj',objId(currentDetail));
   history.replaceState(null,'','#'+p.toString());
 }
 function restoreHash(){
@@ -326,8 +412,10 @@ function restoreHash(){
     if(p.get('p')){onlyPhoto=true;$('onlyphoto').checked=true;}
     if(p.get('q')){q=p.get('q');$('search').value=q;}
     if(p.get('h')){try{JSON.parse(p.get('h')).forEach(k=>hidden.add(k));}catch(e){}}
-    if(p.get('obj')!=null){const oi=+p.get('obj'); const rr=DATA[oi];
-      if(rr){ setTimeout(()=>{ openDetail(rr); if(rr.ll) map.setView(rr.ll, Math.max(map.getZoom(),16)); },0); }}
+    if(p.get('tour')){ const t=findTour(p.get('tour')); const si=+(p.get('stop')||0);
+      if(t){ setTimeout(()=>{ enterTour(t); if(tourStops.length) stepTo(Math.min(Math.max(si,0),tourStops.length-1)); },0); } }
+    else if(p.get('obj')!=null){ const oi=+p.get('obj'); const rr=DATA[oi];
+      if(rr){ setTimeout(()=>{ openDetail(rr); if(rr.ll) map.setView(rr.ll, Math.max(map.getZoom(),16)); },0); } }
   }catch(e){}
   restoring=false;
 }
@@ -336,9 +424,15 @@ $('link').onclick=()=>{updateHash();navigator.clipboard&&navigator.clipboard.wri
 function dl(name,text,type){const b=new Blob([text],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
 $('geojson').onclick=()=>{const fc={type:"FeatureCollection",features:DATA.filter(r=>r.ll).map(r=>({type:"Feature",geometry:{type:"Point",coordinates:[r.ll[1],r.ll[0]]},properties:{betegnelse:r.be,adresse:r.ad,funksjon:r.f,kategori:r.kat,stil:r.sn,kulturmiljo:r.mi,byggeaar:r.ar,kulturminneverdi:r.v,vernestatus:r.vn,fredet:!!r.fr,gnr:r.g,bnr:r.bn}}))};dl('kulturminner-drammen.geojson',JSON.stringify(fc),'application/geo+json');};
 $('csv').onclick=()=>{const esc=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';const cols=['betegnelse','adresse','funksjon','kategori','stil','kulturmiljo','byggeaar','kulturminneverdi','vernestatus','fredet','gnr','bnr','lat','lon'];let out=cols.join(',')+'\n';for(const r of DATA){out+=[r.be,r.ad,r.f,r.kat,r.sn,r.mi,r.ar,r.v,r.vn,r.fr?'ja':'nei',r.g,r.bn,r.ll?r.ll[0]:'',r.ll?r.ll[1]:''].map(esc).join(',')+'\n';}dl('kulturminner-drammen.csv',out,'text/csv');};
+function populateTourSelect(){const sel=$('tour');
+  const og1=document.createElement('optgroup');og1.label='Utvalgte turer';
+  TOURS.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.title;og1.appendChild(o);});
+  const og2=document.createElement('optgroup');og2.label='Kulturmiljø-turer';
+  AUTO_TOURS.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.title;og2.appendChild(o);});
+  if(TOURS.length)sel.appendChild(og1); if(AUTO_TOURS.length)sel.appendChild(og2);}
 // ---- init ----
 restoreHash();
 $('y0').value=y0;$('y1').value=y1;$('slider').value=y1;
-initChart(); buildLegend(); render();
+initChart(); buildLegend(); populateTourSelect(); render();
 try{map.fitBounds(L.featureGroup(markers.map(o=>o.m)).getBounds().pad(0.04));}catch(e){}
 </script></body></html>

@@ -1,7 +1,7 @@
 // test/tours.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { nearestNeighbourOrder, buildAutoTours, resolveStops } from '../lib/tours.js';
+import { nearestNeighbourOrder, buildAutoTours, resolveStops, summarize } from '../lib/tours.js';
 
 test('nearestNeighbourOrder: greedy nearest-next, deterministic', () => {
   const items = [{ id: 'a', ll: [59.740, 10.200] }, { id: 'c', ll: [59.760, 10.200] }, { id: 'b', ll: [59.745, 10.200] }];
@@ -34,9 +34,24 @@ test('buildAutoTours: caps at maxStops', () => {
   assert.equal(tours[0].stops.length, 20);
 });
 
-test('resolveStops: maps indices to records, skips missing/no-ll', () => {
-  const DATA = [{ ll: [59.74, 10.2], be: 'X' }, { be: 'no-ll' }];
-  const recs = resolveStops({ id: 't', stops: [0, 1, 99] }, DATA);
-  assert.equal(recs.length, 1);
-  assert.equal(recs[0].be, 'X');
+test('summarize: function + style + year + verdi', () => {
+  assert.equal(summarize({f:'bolig',kat:'Bolig',sn:'Sveitserstil',ar:'1890',v:'H'}),
+    'Bolig i sveitserstil, oppført 1890. Høy verneverdi.');
+});
+test('summarize: skips Ubestemt/Uoppgitt style; uses y when ar empty', () => {
+  assert.equal(summarize({f:'kirkegård',sn:'Ubestemt',v:'S'}), 'Kirkegård. Svært høy verneverdi.');
+  assert.equal(summarize({f:'bro',sn:'Funksjonalisme',y:1936,v:'H'}), 'Bro i funksjonalisme, oppført 1936. Høy verneverdi.');
+});
+test('summarize: appends Fredet; unknown verdi omitted; empty record -> ""', () => {
+  assert.equal(summarize({f:'bolig',sn:'Sveitserstil',v:'S',fr:1}), 'Bolig i sveitserstil. Svært høy verneverdi. Fredet.');
+  assert.equal(summarize({f:'bolig',v:'X'}), 'Bolig.');
+  assert.equal(summarize({}), '');
+  assert.equal(summarize(null), '');
+});
+
+test('resolveStops: aligned {recs,notes}, bare + {i,note}, skips missing/no-ll', () => {
+  const DATA = [{ ll:[59.74,10.2], be:'X' }, { be:'no-ll' }, { ll:[59.75,10.2], be:'Y' }];
+  const r = resolveStops({ id:'t', stops:[0, {i:2,note:'hei'}, 1, 99] }, DATA);
+  assert.deepEqual(r.recs.map(x=>x.be), ['X','Y']);
+  assert.deepEqual(r.notes, [null,'hei']);
 });

@@ -394,7 +394,8 @@ function updateHash(){ if(restoring) return;
   const p=new URLSearchParams();
   p.set('dim',dim); p.set('y0',y0); p.set('y1',y1); if(hideUnd)p.set('u','1'); if(!useCluster)p.set('c','0'); if(onlyPhoto)p.set('p','1'); if(q)p.set('q',q);
   if(hidden.size)p.set('h',JSON.stringify([...hidden]));
-  if(currentDetail!=null && objId(currentDetail)!=null) p.set('obj',objId(currentDetail));
+  if(activeTour){ p.set('tour',activeTour.id); p.set('stop',tourIdx); }
+  else if(currentDetail!=null && objId(currentDetail)!=null) p.set('obj',objId(currentDetail));
   history.replaceState(null,'','#'+p.toString());
 }
 function restoreHash(){
@@ -409,8 +410,10 @@ function restoreHash(){
     if(p.get('p')){onlyPhoto=true;$('onlyphoto').checked=true;}
     if(p.get('q')){q=p.get('q');$('search').value=q;}
     if(p.get('h')){try{JSON.parse(p.get('h')).forEach(k=>hidden.add(k));}catch(e){}}
-    if(p.get('obj')!=null){const oi=+p.get('obj'); const rr=DATA[oi];
-      if(rr){ setTimeout(()=>{ openDetail(rr); if(rr.ll) map.setView(rr.ll, Math.max(map.getZoom(),16)); },0); }}
+    if(p.get('tour')){ const t=findTour(p.get('tour')); const si=+(p.get('stop')||0);
+      if(t){ setTimeout(()=>{ enterTour(t); if(tourStops.length) stepTo(Math.min(Math.max(si,0),tourStops.length-1)); },0); } }
+    else if(p.get('obj')!=null){ const oi=+p.get('obj'); const rr=DATA[oi];
+      if(rr){ setTimeout(()=>{ openDetail(rr); if(rr.ll) map.setView(rr.ll, Math.max(map.getZoom(),16)); },0); } }
   }catch(e){}
   restoring=false;
 }

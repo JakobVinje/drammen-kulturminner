@@ -73,6 +73,9 @@
    <option value="vn">Vernestatus</option>
    <option value="mi">Kulturmiljø</option>
  </select>
+ <label class="fld">Vandretur</label>
+ <select id="tour"><option value="">— ingen tur —</option></select>
+ <div id="tourbox" class="hidden"></div>
  <label class="fld">Tidslinje (byggeår)</label>
  <div class="row yr"><input id="y0" type="number"/><span>–</span><input id="y1" type="number"/><button class="btn play" id="play">▶</button></div>
  <div class="row"><input id="slider" type="range"/></div>
@@ -115,6 +118,23 @@ const TOURS=[
  {id:"bragernes",title:"Bragernes sentrum",intro:"En rusletur i Bragernes' eldre bykjerne, fra elvefronten opp mot torget. Verneverdig trehus- og murbebyggelse.",stops:[256,253,254,255,257,258,259,249]},
  {id:"stromso",title:"Strømsø rundt",intro:"Strømsø-siden av Drammen: kirkested, gateløp og bygårder fra 1800-tallet.",stops:[897,898,899,900,901,902,903,904]}
 ];
+// ---- tour logic (mirrors lib/tours.js; inlined so it works on file:// too) ----
+function tourHav(a,b){const R=6371000,t=d=>d*Math.PI/180;const dLa=t(b[0]-a[0]),dLo=t(b[1]-a[1]);
+  const x=Math.sin(dLa/2)**2+Math.cos(t(a[0]))*Math.cos(t(b[0]))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function nnOrder(items){if(items.length<=1)return items.slice();const rem=items.slice();const out=[rem.shift()];
+  while(rem.length){const last=out[out.length-1].ll;let bi=0,bd=Infinity;
+    for(let i=0;i<rem.length;i++){const d=tourHav(last,rem[i].ll);if(d<bd){bd=d;bi=i;}}out.push(rem.splice(bi,1)[0]);}return out;}
+function buildAutoTours(){const groups=new Map();
+  DATA.forEach((r,idx)=>{const mi=r.mi;if(!mi||mi==="(uten miljø)"||!Array.isArray(r.ll))return;
+    if(!groups.has(mi))groups.set(mi,[]);groups.get(mi).push({idx,ll:r.ll});});
+  const out=[];for(const[mi,items]of groups){if(items.length<4)continue;
+    items.sort((a,b)=>a.ll[0]-b.ll[0]||a.ll[1]-b.ll[1]);
+    const ord=nnOrder(items).slice(0,20);
+    out.push({id:"mi:"+mi,title:mi,intro:"Kulturmiljø «"+mi+"» — "+ord.length+" stopp.",stops:ord.map(o=>o.idx)});}
+  out.sort((a,b)=>a.title.localeCompare(b.title,'no'));return out;}
+function resolveStops(t){const out=[];for(const i of (t.stops||[])){const r=DATA[i];if(r&&Array.isArray(r.ll))out.push(r);}return out;}
+const AUTO_TOURS=buildAutoTours();
+function findTour(id){return TOURS.concat(AUTO_TOURS).find(t=>t.id===id)||null;}
 function dimConf(d){
   if(d==="v")  return {get:r=>r.v, order:["S","H","M","L"], color:k=>(VERDI[k]||{}).c||"#999", label:k=>(VERDI[k]||{}).l||k};
   if(d==="kat")return {get:r=>r.kat, order:Object.keys(KAT), color:k=>KAT[k]||"#999", label:k=>k};
@@ -336,9 +356,15 @@ $('link').onclick=()=>{updateHash();navigator.clipboard&&navigator.clipboard.wri
 function dl(name,text,type){const b=new Blob([text],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
 $('geojson').onclick=()=>{const fc={type:"FeatureCollection",features:DATA.filter(r=>r.ll).map(r=>({type:"Feature",geometry:{type:"Point",coordinates:[r.ll[1],r.ll[0]]},properties:{betegnelse:r.be,adresse:r.ad,funksjon:r.f,kategori:r.kat,stil:r.sn,kulturmiljo:r.mi,byggeaar:r.ar,kulturminneverdi:r.v,vernestatus:r.vn,fredet:!!r.fr,gnr:r.g,bnr:r.bn}}))};dl('kulturminner-drammen.geojson',JSON.stringify(fc),'application/geo+json');};
 $('csv').onclick=()=>{const esc=s=>'"'+String(s==null?'':s).replace(/"/g,'""')+'"';const cols=['betegnelse','adresse','funksjon','kategori','stil','kulturmiljo','byggeaar','kulturminneverdi','vernestatus','fredet','gnr','bnr','lat','lon'];let out=cols.join(',')+'\n';for(const r of DATA){out+=[r.be,r.ad,r.f,r.kat,r.sn,r.mi,r.ar,r.v,r.vn,r.fr?'ja':'nei',r.g,r.bn,r.ll?r.ll[0]:'',r.ll?r.ll[1]:''].map(esc).join(',')+'\n';}dl('kulturminner-drammen.csv',out,'text/csv');};
+function populateTourSelect(){const sel=$('tour');
+  const og1=document.createElement('optgroup');og1.label='Utvalgte turer';
+  TOURS.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.title;og1.appendChild(o);});
+  const og2=document.createElement('optgroup');og2.label='Kulturmiljø-turer';
+  AUTO_TOURS.forEach(t=>{const o=document.createElement('option');o.value=t.id;o.textContent=t.title;og2.appendChild(o);});
+  if(TOURS.length)sel.appendChild(og1); if(AUTO_TOURS.length)sel.appendChild(og2);}
 // ---- init ----
 restoreHash();
 $('y0').value=y0;$('y1').value=y1;$('slider').value=y1;
-initChart(); buildLegend(); render();
+initChart(); buildLegend(); populateTourSelect(); render();
 try{map.fitBounds(L.featureGroup(markers.map(o=>o.m)).getBounds().pad(0.04));}catch(e){}
 </script></body></html>

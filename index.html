@@ -59,6 +59,15 @@
  #lightbox img{max-width:92vw;max-height:80vh;object-fit:contain;border-radius:4px}
  #lightbox .lbcap{color:#eee;font-size:12px;max-width:90vw;text-align:center}
  #lightbox .lbclose{position:absolute;top:14px;right:18px;color:#fff;background:none;border:none;font-size:30px;cursor:pointer}
+ .tourpin span{display:flex;align-items:center;justify-content:center;width:26px;height:26px;background:#1f77b4;color:#fff;border:2px solid #fff;border-radius:50%;font-size:12px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+ .tourintro{font-size:13px;color:#444;margin:8px 0;line-height:1.4}
+ .tourmeta{font-size:12px;color:#1f77b4;font-weight:600;margin-bottom:6px;min-height:14px}
+ .tourlist{margin:6px 0;padding-left:22px;font-size:13px;max-height:240px;overflow:auto}
+ .tourlist li{cursor:pointer;padding:3px 4px;border-radius:4px}
+ .tourlist li.active{background:#1f77b4;color:#fff}
+ .tourstep{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;font-size:13px}
+ .tourstep button{font-size:13px;padding:6px 12px;border:1px solid #ccc;background:#fff;border-radius:6px;cursor:pointer}
+ .tourstep button:disabled{opacity:.4;cursor:default}
 </style></head><body>
 <div id="map"></div>
 <div id="panel">
@@ -169,6 +178,37 @@ for(const r of DATA){ if(!r.ll) continue;
   markers.push({rec:r,m}); }
 const IDX=new Map(); DATA.forEach((r,i)=>IDX.set(r,i));
 const objId=r=>IDX.get(r);
+// ---- tour state ----
+let activeTour=null, tourStops=[], tourIdx=0;
+const tourLayer=L.layerGroup(), routeLayer=L.layerGroup();
+function enterTour(t){
+  activeTour=t; tourStops=resolveStops(t); tourIdx=0;
+  if(map.hasLayer(cluster))map.removeLayer(cluster); if(map.hasLayer(plain))map.removeLayer(plain);
+  tourLayer.clearLayers(); routeLayer.clearLayers(); map.addLayer(routeLayer); map.addLayer(tourLayer);
+  tourStops.forEach((r,i)=>{const icon=L.divIcon({className:'tourpin',html:'<span>'+(i+1)+'</span>',iconSize:[26,26],iconAnchor:[13,13]});
+    L.marker(r.ll,{icon}).on('click',()=>stepTo(i)).addTo(tourLayer);});
+  $('tour').value=t.id; renderTourBox(); drawRoute();
+  if(tourStops.length) map.fitBounds(L.latLngBounds(tourStops.map(s=>s.ll)).pad(0.2));
+  updateHash();
+}
+function exitTour(){
+  activeTour=null; tourStops=[]; tourLayer.clearLayers(); routeLayer.clearLayers();
+  if(map.hasLayer(tourLayer))map.removeLayer(tourLayer); if(map.hasLayer(routeLayer))map.removeLayer(routeLayer);
+  $('tour').value=''; const box=$('tourbox'); box.classList.add('hidden'); box.innerHTML='';
+  closeDetail(); render();
+}
+function renderTourBox(){
+  const box=$('tourbox'); box.classList.remove('hidden');
+  box.innerHTML='<div class="tourintro">'+esc(activeTour.intro)+'</div><div id="tourmeta" class="tourmeta"></div>'
+    +'<ol id="tourlist" class="tourlist"></ol><button class="btn" id="tourexit">Avslutt tur</button>';
+  const ol=$('tourlist');
+  tourStops.forEach((r,i)=>{const li=document.createElement('li');li.textContent=(r.be||r.f||r.ad||(r.g+'/'+r.bn));li.onclick=()=>stepTo(i);ol.appendChild(li);});
+  $('tourexit').onclick=exitTour; highlightStop();
+}
+function highlightStop(){const ol=$('tourlist'); if(ol)[...ol.children].forEach((li,i)=>li.classList.toggle('active',i===tourIdx));}
+function stepTo(i){ if(i<0||i>=tourStops.length)return; tourIdx=i; const r=tourStops[i];
+  map.flyTo(r.ll, Math.max(map.getZoom(),16)); openDetail(r); highlightStop(); updateHash(); }
+function drawRoute(){ routeLayer.clearLayers(); } // real impl in Task 3
 function popup(r){
   const row=(k,v)=>v?'<tr><td class="k">'+k+'</td><td>'+v+'</td></tr>':'';
   const bn1=(r.bn||'').match(/\d+/);
@@ -205,14 +245,17 @@ function detailFields(r){
 }
 function openDetail(r){
   currentDetail=r;
-  $('detbody').innerHTML='<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
+  const inTour=activeTour&&tourStops[tourIdx]===r;
+  const stepper=inTour?'<div class="tourstep"><button id="tprev">‹ Forrige</button><span>'+(tourIdx+1)+' / '+tourStops.length+'</span><button id="tnext">Neste ›</button></div>':'';
+  $('detbody').innerHTML=stepper+'<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
     +'<p class="detsub">'+esc(r.ad||'')+'</p>'
     +'<div class="detsec"><h3>Foto</h3><div id="detphotos">—</div></div>'
     +heritageSection(r)
     +'<div class="detsec"><h3>Detaljer</h3>'+detailFields(r)+'</div>';
   $('detail').classList.remove('hidden');
-  loadPhotos(r);
-  updateHash();
+  if(inTour){ $('tprev').onclick=()=>stepTo(tourIdx-1); $('tnext').onclick=()=>stepTo(tourIdx+1);
+    $('tprev').disabled=tourIdx===0; $('tnext').disabled=tourIdx===tourStops.length-1; }
+  loadPhotos(r); updateHash();
 }
 function closeDetail(){ currentDetail=null; $('detail').classList.add('hidden'); updateHash(); }
 let photoToken=0;
@@ -279,6 +322,7 @@ function updateChart(visRecs){
   chart.data.labels=decs.map(String); chart.data.datasets=datasets; chart.update('none');
 }
 function render(){
+  if(activeTour) return; // tour focus mode owns the map; exitTour() re-renders
   const C=dimConf(dim); cluster.clearLayers(); plain.clearLayers(); const vis=[],visRecs=[];
   for(const o of markers){ if(visible(o.rec)){ const hp=!!o.rec.hp;
       o.m.setStyle({fillColor:C.color(C.get(o.rec)), color:hp?'#0a7d28':'#222', weight:hp?2.5:.5});
@@ -309,6 +353,7 @@ $('slider').addEventListener('input',e=>{y1=+e.target.value;$('y1').value=y1;ren
 $('hideund').addEventListener('change',e=>{hideUnd=e.target.checked;render();});
 $('usecluster').addEventListener('change',e=>{useCluster=e.target.checked;render();});
 $('onlyphoto').addEventListener('change',e=>{onlyPhoto=e.target.checked;render();});
+$('tour').addEventListener('change',e=>{const t=findTour(e.target.value); if(t)enterTour(t); else exitTour();});
 $('paneltoggle').onclick=()=>{ $('panel').classList.toggle('collapsed'); $('map').classList.toggle('expanded');
   setTimeout(()=>map.invalidateSize(),210); };
 $('detclose').onclick=closeDetail;

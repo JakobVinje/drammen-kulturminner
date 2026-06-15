@@ -19,3 +19,9 @@ Bakes `hp`/`dq`/`km`/`kc`/`kn`/`kv` into `index.html`'s `DATA`:
 1. Import the GitHub repo at vercel.com, or run `vercel` from this folder.
 2. Set `DIMU_API_KEY` in Project → Settings → Environment Variables.
 3. `index.html` is served statically; `api/photos.js` becomes a serverless function.
+
+## Walking tours
+Curated tours are the `TOURS` array in `index.html`; per-kulturmiljø tours are
+generated automatically at load. Route lines come from `/api/route` (OpenRouteService
+`foot-walking`); set `ORS_API_KEY` in Vercel env. Without a key, tours still render
+with straight dashed fallback lines.

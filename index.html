@@ -71,6 +71,11 @@
  .tourstep button{font-size:13px;padding:6px 12px;border:1px solid #ccc;background:#fff;border-radius:6px;cursor:pointer}
  .tourstep button:disabled{opacity:.4;cursor:default}
  .omtekst{font-size:13px;color:#333;line-height:1.45;margin:2px 0}
+ .locbtn{width:34px;height:34px;font-size:18px;line-height:34px;text-align:center;border:none;border-radius:6px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3);cursor:pointer;padding:0}
+ .locbtn:disabled{opacity:.5;cursor:not-allowed}
+ .locbtn.loc-following{background:#1f77b4}
+ .locbtn.loc-paused{background:#cfe3f3}
+ .locbtn.loc-locating{opacity:.6}
 </style></head><body>
 <div id="map"></div>
 <div id="panel">
@@ -284,10 +289,47 @@ function detailFields(r){
     +row('Kulturminneverdi',(VERDI[r.v]||{}).l||r.v)+row('Vernestatus',r.vn)+row('Gnr/Bnr',r.g+'/'+r.bn)+'</dl>'
     +(see?'<div>'+see+'</div>':'');
 }
+// ---- location / wayfinding ----
+function formatDistance(m){if(!Number.isFinite(m)||m<0)return '';if(m<1000)return (Math.round(m/10)*10)+' m';const km=m/1000;return m<10000?km.toFixed(1).replace('.',',')+' km':Math.round(km)+' km';}
+const locLayer=L.layerGroup().addTo(map);
+const LOC_OK=('geolocation' in navigator)&&window.isSecureContext;
+let locWatch=null, followState='off', locDot=null, locAcc=null, lastPos=null, selfRecenter=false, locBtn=null;
+function updateLocBtn(){ if(!locBtn)return;
+  locBtn.classList.toggle('loc-following',followState==='following');
+  locBtn.classList.toggle('loc-paused',followState==='paused');
+  locBtn.classList.toggle('loc-locating',followState==='locating');
+  locBtn.title=!LOC_OK?'Posisjon krever https – åpne den publiserte siden'
+    :followState==='off'?'Vis min posisjon'
+    :followState==='paused'?'Sentrer på min posisjon':'Skru av posisjon'; }
+function updateTourDist(){ const el=$('tourdist'); if(!el)return;
+  el.textContent=(locWatch!=null&&lastPos&&activeTour&&tourStops[tourIdx])
+    ? ' · ≈'+formatDistance(tourHav(lastPos,tourStops[tourIdx].ll)) : ''; }
+function stopLocate(){ if(locWatch!=null){navigator.geolocation.clearWatch(locWatch);locWatch=null;}
+  followState='off'; locLayer.clearLayers(); locDot=null; locAcc=null; updateLocBtn(); updateTourDist(); }
+function onFix(p){ lastPos=[p.coords.latitude,p.coords.longitude]; const acc=p.coords.accuracy||0;
+  if(!locDot){ locAcc=L.circle(lastPos,{radius:acc,color:'#1f77b4',weight:1,fillColor:'#1f77b4',fillOpacity:.12}).addTo(locLayer);
+    locDot=L.circleMarker(lastPos,{radius:7,color:'#fff',weight:2,fillColor:'#1f77b4',fillOpacity:1}).addTo(locLayer); }
+  else { locDot.setLatLng(lastPos); locAcc.setLatLng(lastPos); locAcc.setRadius(acc); }
+  if(followState==='locating'||followState==='following'){ selfRecenter=true; map.setView(lastPos,Math.max(map.getZoom(),16)); followState='following'; updateLocBtn(); }
+  updateTourDist(); }
+function onErr(e){ if(e&&e.code===1){ stopLocate(); const s=$('status'); if(s)s.textContent='Posisjon avslått.'; } }
+function startLocate(){ followState='locating'; updateLocBtn();
+  locWatch=navigator.geolocation.watchPosition(onFix,onErr,{enableHighAccuracy:true,maximumAge:5000,timeout:15000}); }
+function toggleLocate(){ if(!LOC_OK)return;
+  if(followState==='off') startLocate();
+  else if(followState==='paused'){ if(lastPos){selfRecenter=true;map.setView(lastPos,Math.max(map.getZoom(),16));} followState='following'; updateLocBtn(); }
+  else stopLocate(); }
+map.on('movestart',()=>{ if(selfRecenter){selfRecenter=false;return;} if(followState==='following'){followState='paused';updateLocBtn();} });
+const LocateControl=L.Control.extend({options:{position:'bottomright'},onAdd:function(){
+  const b=L.DomUtil.create('button','locbtn'); b.type='button'; b.textContent='📍';
+  if(!LOC_OK)b.disabled=true;
+  L.DomEvent.disableClickPropagation(b); L.DomEvent.on(b,'click',ev=>{L.DomEvent.stop(ev);toggleLocate();});
+  locBtn=b; updateLocBtn(); return b; }});
+map.addControl(new LocateControl());
 function openDetail(r){
   currentDetail=r;
   const inTour=activeTour&&tourStops[tourIdx]===r;
-  const stepper=inTour?'<div class="tourstep"><button id="tprev">‹ Forrige</button><span>'+(tourIdx+1)+' / '+tourStops.length+'</span><button id="tnext">Neste ›</button></div>':'';
+  const stepper=inTour?'<div class="tourstep"><button id="tprev">‹ Forrige</button><span>'+(tourIdx+1)+' / '+tourStops.length+'<span id="tourdist"></span></span><button id="tnext">Neste ›</button></div>':'';
   const note=inTour?tourNotes[tourIdx]:null; const desc=note||summarize(r);
   $('detbody').innerHTML=stepper+'<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
     +'<p class="detsub">'+esc(r.ad||'')+'</p>'
@@ -298,7 +340,7 @@ function openDetail(r){
   $('detail').classList.remove('hidden');
   if(inTour){ $('tprev').onclick=()=>stepTo(tourIdx-1); $('tnext').onclick=()=>stepTo(tourIdx+1);
     $('tprev').disabled=tourIdx===0; $('tnext').disabled=tourIdx===tourStops.length-1; }
-  loadPhotos(r); updateHash();
+  loadPhotos(r); updateTourDist(); updateHash();
 }
 function closeDetail(){ currentDetail=null; $('detail').classList.add('hidden'); updateHash(); }
 let photoToken=0;

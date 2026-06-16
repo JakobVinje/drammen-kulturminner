@@ -329,7 +329,7 @@ map.addControl(new LocateControl());
 function openDetail(r){
   currentDetail=r;
   const inTour=activeTour&&tourStops[tourIdx]===r;
-  const stepper=inTour?'<div class="tourstep"><button id="tprev">‹ Forrige</button><span>'+(tourIdx+1)+' / '+tourStops.length+'</span><button id="tnext">Neste ›</button></div>':'';
+  const stepper=inTour?'<div class="tourstep"><button id="tprev">‹ Forrige</button><span>'+(tourIdx+1)+' / '+tourStops.length+'<span id="tourdist"></span></span><button id="tnext">Neste ›</button></div>':'';
   const note=inTour?tourNotes[tourIdx]:null; const desc=note||summarize(r);
   $('detbody').innerHTML=stepper+'<h2>'+esc(r.be||r.f||r.ad||(r.g+'/'+r.bn))+'</h2>'
     +'<p class="detsub">'+esc(r.ad||'')+'</p>'
@@ -340,7 +340,7 @@ function openDetail(r){
   $('detail').classList.remove('hidden');
   if(inTour){ $('tprev').onclick=()=>stepTo(tourIdx-1); $('tnext').onclick=()=>stepTo(tourIdx+1);
     $('tprev').disabled=tourIdx===0; $('tnext').disabled=tourIdx===tourStops.length-1; }
-  loadPhotos(r); updateHash();
+  loadPhotos(r); updateTourDist(); updateHash();
 }
 function closeDetail(){ currentDetail=null; $('detail').classList.add('hidden'); updateHash(); }
 let photoToken=0;
